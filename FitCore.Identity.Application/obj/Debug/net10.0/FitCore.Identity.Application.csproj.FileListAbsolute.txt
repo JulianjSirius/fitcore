@@ -1,0 +1,15 @@
+C:\FitCore\FitCore.Identity.Application\bin\Debug\net10.0\FitCore.Identity.Application.deps.json
+C:\FitCore\FitCore.Identity.Application\bin\Debug\net10.0\FitCore.Identity.Application.dll
+C:\FitCore\FitCore.Identity.Application\bin\Debug\net10.0\FitCore.Identity.Application.pdb
+C:\FitCore\FitCore.Identity.Application\bin\Debug\net10.0\FitCore.Identity.Domain.dll
+C:\FitCore\FitCore.Identity.Application\bin\Debug\net10.0\FitCore.Identity.Domain.pdb
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.csproj.AssemblyReference.cache
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.AssemblyInfoInputs.cache
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.AssemblyInfo.cs
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.csproj.CoreCompileInputs.cache
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore..381CF59A.Up2Date
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.dll
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\refint\FitCore.Identity.Application.dll
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\FitCore.Identity.Application.pdb
+C:\FitCore\FitCore.Identity.Application\obj\Debug\net10.0\ref\FitCore.Identity.Application.dll

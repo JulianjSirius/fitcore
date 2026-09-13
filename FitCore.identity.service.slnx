@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FitCore.Identity.API/FitCore.Identity.API.csproj" />
+  <Project Path="FitCore.Identity.Application/FitCore.Identity.Application.csproj" />
+  <Project Path="FitCore.Identity.Domain/FitCore.Identity.Domain.csproj" />
+  <Project Path="FitCore.Identity.Infrastructure/FitCore.Identity.Infrastructure.csproj" />
+</Solution>
