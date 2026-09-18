@@ -1,0 +1,12 @@
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\bin\Debug\net10.0\FitCore.Workouts.Domain.deps.json
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\bin\Debug\net10.0\FitCore.Workouts.Domain.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\bin\Debug\net10.0\FitCore.Workouts.Domain.pdb
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.AssemblyInfoInputs.cache
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.AssemblyInfo.cs
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.csproj.CoreCompileInputs.cache
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.sourcelink.json
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\refint\FitCore.Workouts.Domain.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\FitCore.Workouts.Domain.pdb
+C:\FitCore\Services\Workouts\FitCore.Workouts.Domain\obj\Debug\net10.0\ref\FitCore.Workouts.Domain.dll

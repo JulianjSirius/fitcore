@@ -1,0 +1,16 @@
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.csproj.AssemblyReference.cache
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.AssemblyInfoInputs.cache
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.AssemblyInfo.cs
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.csproj.CoreCompileInputs.cache
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.sourcelink.json
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\bin\Debug\net10.0\FitCore.Workouts.Application.deps.json
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\bin\Debug\net10.0\FitCore.Workouts.Application.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\bin\Debug\net10.0\FitCore.Workouts.Application.pdb
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\bin\Debug\net10.0\FitCore.Workouts.Domain.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\bin\Debug\net10.0\FitCore.Workouts.Domain.pdb
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore..25F45D00.Up2Date
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\refint\FitCore.Workouts.Application.dll
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\FitCore.Workouts.Application.pdb
+C:\FitCore\Services\Workouts\FitCore.Workouts.Application\obj\Debug\net10.0\ref\FitCore.Workouts.Application.dll

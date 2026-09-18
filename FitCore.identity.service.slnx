@@ -1,6 +1,13 @@
 <Solution>
-  <Project Path="FitCore.Identity.API/FitCore.Identity.API.csproj" />
-  <Project Path="FitCore.Identity.Application/FitCore.Identity.Application.csproj" />
-  <Project Path="FitCore.Identity.Domain/FitCore.Identity.Domain.csproj" />
-  <Project Path="FitCore.Identity.Infrastructure/FitCore.Identity.Infrastructure.csproj" />
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/Workouts/">
+    <Project Path="Services/Workouts/FitCore.Workouts.API/FitCore.Workouts.API.csproj" />
+    <Project Path="Services/Workouts/FitCore.Workouts.Application/FitCore.Workouts.Application.csproj" />
+    <Project Path="Services/Workouts/FitCore.Workouts.Domain/FitCore.Workouts.Domain.csproj" />
+    <Project Path="Services/Workouts/FitCore.Workouts.Infrastructure/FitCore.Workouts.Infrastructure.csproj" />
+  </Folder>
+  <Project Path="Services/Identity/FitCore.Identity.API/FitCore.Identity.API.csproj" />
+  <Project Path="Services/Identity/FitCore.Identity.Application/FitCore.Identity.Application.csproj" />
+  <Project Path="Services/Identity/FitCore.Identity.Domain/FitCore.Identity.Domain.csproj" />
+  <Project Path="Services/Identity/FitCore.Identity.Infrastructure/FitCore.Identity.Infrastructure.csproj" />
 </Solution>

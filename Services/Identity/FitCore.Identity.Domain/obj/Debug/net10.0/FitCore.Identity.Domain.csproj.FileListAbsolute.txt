@@ -1,0 +1,12 @@
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\bin\Debug\net10.0\FitCore.Identity.Domain.deps.json
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\bin\Debug\net10.0\FitCore.Identity.Domain.dll
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\bin\Debug\net10.0\FitCore.Identity.Domain.pdb
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.AssemblyInfoInputs.cache
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.AssemblyInfo.cs
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.csproj.CoreCompileInputs.cache
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.sourcelink.json
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.dll
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\refint\FitCore.Identity.Domain.dll
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\FitCore.Identity.Domain.pdb
+C:\FitCore\Services\Identity\FitCore.Identity.Domain\obj\Debug\net10.0\ref\FitCore.Identity.Domain.dll
