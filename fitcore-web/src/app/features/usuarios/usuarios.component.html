@@ -1,0 +1,171 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Gimnasio</span>
+      <h1>Usuarios</h1>
+      <p>{{ usuarios().length }} usuarios registrados. Elige uno para ver su membresía y sus rutinas.</p>
+    </div>
+    @if (esAdmin()) {
+      <a class="btn" routerLink="/codigos"><app-icon name="codigos" /> Generar código de registro</a>
+    }
+  </header>
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+  } @else {
+    <div class="split">
+      <div class="card list-card">
+        <label class="search">
+          <span class="visually-hidden">Buscar usuario</span>
+          <input class="input" placeholder="Buscar por nombre, correo o teléfono" [value]="busqueda()" (input)="busqueda.set($any($event.target).value)" />
+        </label>
+        @if (filtrados().length === 0) {
+          <app-empty-state title="Sin usuarios" message="No hay usuarios que coincidan con la búsqueda." />
+        } @else {
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Teléfono</th>
+                  <th><span class="visually-hidden">Acción</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (u of filtrados(); track u.id) {
+                  <tr [class.is-selected]="seleccionado()?.id === u.id" (click)="seleccionar(u)" class="clickable">
+                    <td>
+                      <div class="person">
+                        <span class="avatar" aria-hidden="true">{{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}</span>
+                        <div class="cell-title">
+                          <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+                          <small>{{ u.email }}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="mono">{{ u.telefono }}</td>
+                    <td class="num">
+                      <button type="button" class="btn btn-sm" (click)="seleccionar(u); $event.stopPropagation()">Ver</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <aside id="detalle-usuario">
+        @if (seleccionado(); as u) {
+          <div class="card detail">
+            <div class="card-head">
+              <div class="person">
+                <span class="avatar avatar--lg" aria-hidden="true">{{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}</span>
+                <div class="cell-title">
+                  <strong class="detail-name">{{ u.firstName }} {{ u.lastName }}</strong>
+                  <small>{{ u.email }}</small>
+                </div>
+              </div>
+              <button type="button" class="btn btn-ghost btn-sm" (click)="cerrarDetalle()" title="Cerrar"><app-icon name="cerrar" /></button>
+            </div>
+
+            @if (mensaje()) {
+              <p class="alert alert-ok">{{ mensaje() }}</p>
+            }
+
+            @if (editando()) {
+              <form class="form" #f="ngForm" (ngSubmit)="guardar(f)">
+                <div class="form-grid">
+                  <label class="field">Nombre<input name="firstName" [(ngModel)]="edicion.firstName" required /></label>
+                  <label class="field">Apellido<input name="lastName" [(ngModel)]="edicion.lastName" required /></label>
+                  <label class="field full">Correo<input name="email" type="email" [(ngModel)]="edicion.email" required /></label>
+                  <label class="field full">Teléfono<input name="telefono" type="number" min="1000000000" max="9999999999" [(ngModel)]="edicion.telefono" required /></label>
+                  <label class="field full">
+                    Nueva contraseña
+                    <input name="contrasena" type="password" minlength="6" [(ngModel)]="edicion.contrasena" required />
+                  </label>
+                </div>
+                <p class="muted small">La API reemplaza la contraseña en cada actualización: comunícale la nueva al usuario.</p>
+                @if (errorEdicion()) {
+                  <p class="alert alert-error">{{ errorEdicion() }}</p>
+                }
+                <div class="actions">
+                  <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">{{ guardando() ? 'Guardando…' : 'Guardar' }}</button>
+                  <button class="btn btn-ghost" type="button" (click)="editando.set(false)">Cancelar</button>
+                </div>
+              </form>
+            } @else {
+              <dl class="details">
+                <div><dt>Teléfono</dt><dd class="mono">{{ u.telefono }}</dd></div>
+                <div><dt>Rutinas</dt><dd>{{ rutinasDelUsuario().length }}</dd></div>
+              </dl>
+              @if (esDueno()) {
+                <button type="button" class="btn btn-sm edit-btn" (click)="empezarEdicion()"><app-icon name="editar" [size]="15" /> Editar datos</button>
+              }
+            }
+
+            <h3 class="section-title">Membresía</h3>
+            @if (cargandoDetalle()) {
+              <app-loading-state />
+            } @else if (membresia(); as m) {
+              <div class="membership" [class.membership--off]="m.estado !== 'Activa'">
+                <div>
+                  <span class="badge" [class.badge-ok]="m.estado === 'Activa'" [class.badge-danger]="m.estado !== 'Activa'">{{ m.estado }}</span>
+                  <strong>{{ m.planNombre }}</strong>
+                </div>
+                <dl class="details">
+                  <div><dt>Vence</dt><dd>{{ m.fechaVencimiento | date: 'mediumDate' }}</dd></div>
+                  @if (m.estado === 'Activa') {
+                    <div><dt>Días restantes</dt><dd>{{ diasRestantes(m) }}</dd></div>
+                  }
+                  <div><dt>Titular</dt><dd>{{ m.titularNombre }}</dd></div>
+                  @if (m.acompananteNombre) {
+                    <div><dt>Acompañante</dt><dd>{{ m.acompananteNombre }}</dd></div>
+                  }
+                </dl>
+              </div>
+            } @else if (sinMembresia()) {
+              <p class="muted small">Este usuario todavía no tiene membresía.</p>
+            } @else {
+              <p class="alert alert-error">No se pudo consultar la membresía.</p>
+            }
+            @if (esAdmin()) {
+              <a class="btn btn-sm" routerLink="/membresias" [queryParams]="{ usuario: u.id }"><app-icon name="membresias" [size]="15" /> Registrar pago</a>
+            }
+
+            @if (rutinasDelUsuario().length > 0) {
+              <h3 class="section-title">Rutinas</h3>
+              <ul class="mini-list">
+                @for (r of rutinasDelUsuario(); track r.id) {
+                  <li>
+                    <span>{{ r.nombre }}</span>
+                    <span class="badge">{{ r.nivelDificultad }}</span>
+                  </li>
+                }
+              </ul>
+            }
+
+            @if (esAdmin() && pagos().length > 0) {
+              <h3 class="section-title">Pagos</h3>
+              <ul class="mini-list">
+                @for (p of pagos(); track p.id) {
+                  <li>
+                    <span>{{ p.fecha | date: 'mediumDate' }} · {{ p.planNombre }}</span>
+                    <span class="mono">{{ p.monto | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        } @else {
+          <div class="card placeholder">
+            <app-icon name="usuarios" [size]="32" />
+            <p class="muted">Selecciona un usuario para ver su detalle.</p>
+          </div>
+        }
+      </aside>
+    </div>
+  }
+</section>

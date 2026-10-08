@@ -1,0 +1,295 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Entrenamiento</span>
+      <h1>Rutinas</h1>
+      <p>
+        @switch (rol()) {
+          @case ('Usuario') { Tus sesiones de entrenamiento. Puedes permitir que tu entrenador las ajuste. }
+          @case ('Entrenador') { Crea rutinas para tus usuarios y edita las que te dieron permiso. }
+          @default { Consulta todas las rutinas del gimnasio. }
+        }
+      </p>
+    </div>
+    @if (puedeCrear()) {
+      <button type="button" class="btn btn-primary" (click)="nueva()">
+        <app-icon name="mas" /> Nueva rutina
+      </button>
+    }
+  </header>
+
+  @if (aviso()) {
+    <p class="alert alert-ok" role="status">{{ aviso() }}</p>
+  }
+  @if (logrosGuardado().length > 0) {
+    <section class="card logro-guardado" role="status" aria-live="polite">
+      <div class="logro-head">
+        <span class="logro-icono"><app-icon name="trofeo" [size]="22" /></span>
+        <div>
+          <span class="eyebrow">¡Nuevo logro!</span>
+          <h2>Subiste {{ logrosGuardado().length === 1 ? 'un ejercicio' : logrosGuardado().length + ' ejercicios' }}</h2>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="logrosGuardado.set([])" title="Cerrar">
+          <app-icon name="cerrar" [size]="16" />
+        </button>
+      </div>
+      <ul class="logro-lista">
+        @for (p of logrosGuardado(); track p.id) {
+          <li>
+            <strong>{{ p.nombreEjercicio }}</strong>
+            @if (subida(p.repeticionesAnteriores, p.repeticionesNuevas, 'reps'); as reps) {
+              <span class="badge badge-ok">{{ reps }}</span>
+            }
+            @if (subida(p.pesoAnteriorKg, p.pesoNuevoKg, 'kg'); as kg) {
+              <span class="badge badge-ok">{{ kg }}</span>
+            }
+            @if (p.esRecordPersonal) {
+              <span class="badge badge-accent">Récord personal</span>
+            }
+          </li>
+        }
+      </ul>
+      @if (rol() === 'Usuario') {
+        <a class="small" routerLink="/logros">Ver mis retos y logros →</a>
+      }
+    </section>
+  }
+  @if (rol() === 'Administrador') {
+    <p class="alert alert-info">Los administradores pueden consultar las rutinas; las crean los usuarios y entrenadores.</p>
+  }
+
+  <!-- ================= EDITOR ================= -->
+  @if (editorAbierto()) {
+    <section class="card editor" id="editor-rutina">
+      <div class="card-head">
+        <div>
+          <span class="eyebrow">{{ form.id ? 'Editar rutina' : 'Nueva rutina' }}</span>
+          <h2 class="editor-title">{{ form.nombre || 'Sin nombre' }}</h2>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="cerrarEditor()">
+          <app-icon name="cerrar" /> Cancelar
+        </button>
+      </div>
+
+      <form class="editor-grid" (ngSubmit)="guardar()">
+        <div class="form">
+          <label class="field">
+            Nombre
+            <input name="nombre" [(ngModel)]="form.nombre" placeholder="Fuerza tren superior" required />
+          </label>
+          <label class="field">
+            Descripción
+            <textarea name="descripcion" rows="2" [(ngModel)]="form.descripcion" placeholder="Objetivo de la sesión" required></textarea>
+          </label>
+          <div class="form-grid">
+            <label class="field">
+              Nivel
+              <select name="nivel" [(ngModel)]="form.nivelDificultad">
+                @for (n of niveles; track n) {
+                  <option [value]="n">{{ n }}</option>
+                }
+              </select>
+            </label>
+            @if (rol() === 'Entrenador') {
+              <label class="field">
+                Usuario
+                <select name="usuarioId" [(ngModel)]="form.usuarioId" [disabled]="!!form.id" required>
+                  <option value="" disabled>Elige un usuario</option>
+                  @for (u of usuarios(); track u.id) {
+                    <option [value]="u.id">{{ u.firstName }} {{ u.lastName }}</option>
+                  }
+                </select>
+              </label>
+            }
+          </div>
+          <label class="check">
+            <input type="checkbox" name="permitir" [(ngModel)]="form.permitirEdicionEntrenador" />
+            Permitir que los entrenadores editen esta rutina
+          </label>
+
+          <div class="picked">
+            <div class="picked-head">
+              <h3>Ejercicios de la rutina</h3>
+              <span class="badge badge-accent">{{ form.items.length }}</span>
+            </div>
+            @if (form.items.length === 0) {
+              <p class="muted small">Elige ejercicios de la biblioteca de la derecha.</p>
+            } @else {
+              <ol class="picked-list">
+                @for (item of form.items; track item.ejercicioId; let i = $index, first = $first, last = $last) {
+                  <li class="picked-item">
+                    <span class="order">{{ i + 1 }}</span>
+                    <div class="cell-title">
+                      <strong>{{ item.nombre }}</strong>
+                      <small>{{ item.grupoMuscular }}</small>
+                    </div>
+                    <label class="mini">
+                      Series
+                      <input type="number" min="1" [name]="'series' + i" [(ngModel)]="item.series" />
+                    </label>
+                    <label class="mini">
+                      Reps
+                      <input type="number" min="1" [name]="'reps' + i" [(ngModel)]="item.repeticiones" />
+                    </label>
+                    <label class="mini">
+                      Peso (kg)
+                      <input type="number" min="0" max="1000" step="0.5" [name]="'peso' + i" [(ngModel)]="item.pesoKg" />
+                    </label>
+                    <label class="mini">
+                      Descanso (s)
+                      <input type="number" min="0" step="15" [name]="'descanso' + i" [(ngModel)]="item.tiempoDescansoSegundos" />
+                    </label>
+                    <div class="item-actions">
+                      <button type="button" class="btn btn-ghost btn-sm" [disabled]="first" (click)="mover(i, -1)" title="Subir">↑</button>
+                      <button type="button" class="btn btn-ghost btn-sm" [disabled]="last" (click)="mover(i, 1)" title="Bajar">↓</button>
+                      <button type="button" class="btn btn-ghost btn-sm" (click)="quitar(i)" title="Quitar">
+                        <app-icon name="cerrar" [size]="16" />
+                      </button>
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </div>
+
+          @if (formError()) {
+            <p class="alert alert-error" role="alert">{{ formError() }}</p>
+          }
+          <div class="actions">
+            <button class="btn btn-primary" type="submit" [disabled]="saving()">
+              <app-icon name="check" /> {{ saving() ? 'Guardando…' : form.id ? 'Guardar cambios' : 'Crear rutina' }}
+            </button>
+            <button class="btn btn-ghost" type="button" (click)="cerrarEditor()">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="library">
+          <h3>Biblioteca</h3>
+          <div class="library-filters">
+            <label class="search">
+              <span class="visually-hidden">Buscar ejercicio</span>
+              <input
+                class="input"
+                name="busquedaEjercicio"
+                placeholder="Buscar ejercicio"
+                [ngModel]="busquedaEjercicio()"
+                (ngModelChange)="busquedaEjercicio.set($event)"
+              />
+            </label>
+            <select
+              class="input"
+              name="grupoEjercicio"
+              aria-label="Grupo muscular"
+              [ngModel]="grupoEjercicio()"
+              (ngModelChange)="grupoEjercicio.set($event)"
+            >
+              <option value="">Todos los grupos</option>
+              @for (g of gruposMusculares(); track g) {
+                <option [value]="g">{{ g }}</option>
+              }
+            </select>
+          </div>
+          <div class="library-list">
+            @for (e of sugerencias(); track e.id) {
+              <button type="button" class="library-item" [class.selected]="estaEnRutina(e.id)" (click)="agregar(e)">
+                <span class="cell-title">
+                  <strong>{{ e.nombre }}</strong>
+                  <small>{{ e.grupoMuscular }}</small>
+                </span>
+                <app-icon [name]="estaEnRutina(e.id) ? 'check' : 'mas'" [size]="16" />
+              </button>
+            } @empty {
+              <p class="muted small">No hay ejercicios que coincidan.</p>
+            }
+          </div>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- ================= LISTA ================= -->
+  @if (loading()) {
+    <app-loading-state />
+  } @else if (errorMessage()) {
+    <p class="alert alert-error">{{ errorMessage() }}</p>
+  } @else {
+    @if (rutinas().length > 0) {
+      <div class="toolbar">
+        <label class="search">
+          <span class="visually-hidden">Buscar rutina</span>
+          <input
+            class="input"
+            placeholder="Buscar por nombre{{ rol() !== 'Usuario' ? ' o usuario' : '' }}"
+            [value]="busqueda()"
+            (input)="busqueda.set($any($event.target).value)"
+          />
+        </label>
+        <div class="tabs" role="tablist" aria-label="Filtrar por nivel">
+          <button type="button" role="tab" [attr.aria-selected]="filtroNivel() === ''" (click)="filtroNivel.set('')">Todas</button>
+          @for (n of niveles; track n) {
+            <button type="button" role="tab" [attr.aria-selected]="filtroNivel() === n" (click)="filtroNivel.set(n)">{{ n }}</button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (rutinas().length === 0) {
+      <app-empty-state
+        title="Sin rutinas"
+        [message]="puedeCrear() ? 'Usa “Nueva rutina” para crear la primera.' : 'Todavía no hay rutinas registradas.'"
+      />
+    } @else if (rutinasFiltradas().length === 0) {
+      <app-empty-state title="Sin coincidencias" message="Prueba con otra búsqueda o nivel." />
+    } @else {
+      <div class="routine-grid">
+        @for (r of rutinasFiltradas(); track r.id) {
+          <article class="card routine">
+            <div class="routine-top">
+              <span class="badge" [class.badge-ok]="r.nivelDificultad === 'Principiante'" [class.badge-warn]="r.nivelDificultad === 'Intermedio'" [class.badge-danger]="r.nivelDificultad === 'Avanzado'">
+                {{ r.nivelDificultad }}
+              </span>
+              @if (r.permitirEdicionEntrenador) {
+                <span class="badge badge-info" title="Los entrenadores pueden editarla">Editable por entrenador</span>
+              }
+            </div>
+            <h2>{{ r.nombre }}</h2>
+            <p class="muted">{{ r.descripcion }}</p>
+
+            <div class="routine-meta">
+              <span><strong>{{ r.rutinaEjercicios.length }}</strong> ejercicios</span>
+              @if (nombreUsuario(r.usuarioId); as dueno) {
+                <span>{{ dueno }}</span>
+              }
+              <span>{{ (r.fechaActualizacion ?? r.fechaCreacion) | date: 'mediumDate' }}</span>
+            </div>
+
+            @if (expandida() === r.id) {
+              <ol class="exercise-list">
+                @for (e of r.rutinaEjercicios; track e.ejercicioId) {
+                  <li>
+                    <div class="cell-title">
+                      <strong>{{ e.nombre }}</strong>
+                      <small>{{ e.grupoMuscular }}</small>
+                    </div>
+                    <span class="mono">{{ e.series }}×{{ e.repeticiones }}@if (e.pesoKg > 0) { · {{ e.pesoKg }} kg }</span>
+                    <span class="muted mono">{{ e.tiempoDescansoSegundos }}s</span>
+                  </li>
+                }
+              </ol>
+            }
+
+            <div class="actions routine-actions">
+              <button type="button" class="btn btn-sm" (click)="alternarDetalle(r.id)" [attr.aria-expanded]="expandida() === r.id">
+                {{ expandida() === r.id ? 'Ocultar' : 'Ver ejercicios' }}
+              </button>
+              @if (puedeModificar(r)) {
+                <button type="button" class="btn btn-sm" (click)="editar(r)"><app-icon name="editar" [size]="15" /> Editar</button>
+                <button type="button" class="btn btn-sm btn-danger" (click)="eliminar(r)"><app-icon name="borrar" [size]="15" /> Eliminar</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  }
+</section>

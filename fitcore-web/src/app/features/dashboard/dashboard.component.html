@@ -1,0 +1,264 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">{{ rol() }}</span>
+      <h1>Hola, {{ nombre() }}</h1>
+      <p>
+        @switch (rol()) {
+          @case ('Usuario') { Tu membresía, tu acceso y tus rutinas de un vistazo. }
+          @case ('Entrenador') { Tus usuarios, sus rutinas y la biblioteca de ejercicios. }
+          @case ('Administrador') { El pulso del gimnasio: personas, pagos y accesos. }
+        }
+      </p>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else {
+    @switch (rol()) {
+      <!-- ================= USUARIO ================= -->
+      @case ('Usuario') {
+        @if (membresia(); as m) {
+          <div class="grid grid-4">
+            <div class="card stat stat--accent">
+              <span>Plan</span>
+              <strong>{{ m.planNombre }}</strong>
+              <small>{{ m.acompananteNombre ? 'Con ' + m.acompananteNombre : 'Individual' }}</small>
+            </div>
+            <div class="card stat">
+              <span>Estado</span>
+              <strong [class.text-ok]="m.estado === 'Activa'" [class.text-danger]="m.estado !== 'Activa'">
+                {{ m.estado }}
+              </strong>
+              <small>Desde {{ m.fechaInicio | date: 'mediumDate' }}</small>
+            </div>
+            <div class="card stat">
+              <span>Días restantes</span>
+              <strong>{{ diasRestantes() }}</strong>
+              <small>Vence el {{ m.fechaVencimiento | date: 'mediumDate' }}</small>
+            </div>
+            <div class="card stat">
+              <span>Mis rutinas</span>
+              <strong>{{ rutinas().length }}</strong>
+              <small>Creadas por ti o tu entrenador</small>
+            </div>
+          </div>
+        } @else {
+          <div class="card notice-card">
+            <div>
+              <h2>Todavía no tienes una membresía activa</h2>
+              <p class="muted">Acércate a recepción para registrar tu pago. Revisa los planes disponibles.</p>
+            </div>
+            <a class="btn" routerLink="/planes">Ver planes <app-icon name="flecha" /></a>
+          </div>
+        }
+
+        <div class="grid grid-2">
+          <a class="card action-card" routerLink="/mi-acceso">
+            <app-icon name="qr" [size]="28" />
+            <div>
+              <h2>Mi acceso</h2>
+              <p>Muestra tu código QR en la entrada. Se renueva cada minuto.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+          <a class="card action-card" routerLink="/rutinas">
+            <app-icon name="rutinas" [size]="28" />
+            <div>
+              <h2>Nueva rutina</h2>
+              <p>Arma tu sesión con series, repeticiones y descansos.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+        </div>
+
+        @if (rutinas().length > 0) {
+          <div class="card">
+            <div class="card-head">
+              <h2>Mis rutinas</h2>
+              <a class="btn btn-sm" routerLink="/rutinas">Ver todas</a>
+            </div>
+            <div class="list">
+              @for (r of rutinas().slice(0, 5); track r.id) {
+                <div class="list-row">
+                  <div class="cell-title">
+                    <strong>{{ r.nombre }}</strong>
+                    <small>{{ r.descripcion }}</small>
+                  </div>
+                  <span class="badge">{{ r.nivelDificultad }}</span>
+                  <span class="muted">{{ r.rutinaEjercicios.length }} ejercicios</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ================= ENTRENADOR ================= -->
+      @case ('Entrenador') {
+        <div class="grid grid-4">
+          <div class="card stat stat--accent">
+            <span>Usuarios</span>
+            <strong>{{ usuarios().length }}</strong>
+            <small>Registrados en el gimnasio</small>
+          </div>
+          <div class="card stat">
+            <span>Rutinas</span>
+            <strong>{{ rutinas().length }}</strong>
+            <small>En total</small>
+          </div>
+          <div class="card stat">
+            <span>Editables por ti</span>
+            <strong>{{ rutinasEditables().length }}</strong>
+            <small>Con permiso del usuario</small>
+          </div>
+          <div class="card stat">
+            <span>Ejercicios</span>
+            <strong>{{ ejercicios().length }}</strong>
+            <small>En la biblioteca</small>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <a class="card action-card" routerLink="/control-acceso">
+            <app-icon name="escanear" [size]="28" />
+            <div>
+              <h2>Validar acceso</h2>
+              <p>Escanea el QR de un usuario en la entrada.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+          <a class="card action-card" routerLink="/rutinas">
+            <app-icon name="rutinas" [size]="28" />
+            <div>
+              <h2>Crear rutina</h2>
+              <p>Asigna una rutina a uno de tus usuarios.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+          <a class="card action-card" routerLink="/usuarios">
+            <app-icon name="usuarios" [size]="28" />
+            <div>
+              <h2>Usuarios</h2>
+              <p>Consulta datos y membresía de cada usuario.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+        </div>
+
+        @if (rutinasEditables().length > 0) {
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h2>Rutinas que puedes editar</h2>
+                <p>Los usuarios te dieron permiso de ajustarlas.</p>
+              </div>
+              <a class="btn btn-sm" routerLink="/rutinas">Ir a rutinas</a>
+            </div>
+            <div class="list">
+              @for (r of rutinasEditables().slice(0, 6); track r.id) {
+                <div class="list-row">
+                  <div class="cell-title">
+                    <strong>{{ r.nombre }}</strong>
+                    <small>{{ nombreUsuario(r.usuarioId) }}</small>
+                  </div>
+                  <span class="badge">{{ r.nivelDificultad }}</span>
+                  <span class="muted">{{ r.rutinaEjercicios.length }} ejercicios</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- ================= ADMINISTRADOR ================= -->
+      @case ('Administrador') {
+        <div class="grid grid-4">
+          <div class="card stat stat--accent">
+            <span>Ingresos del mes</span>
+            <strong>{{ ingresosMes() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+            <small>Pagos registrados este mes</small>
+          </div>
+          <div class="card stat">
+            <span>Usuarios</span>
+            <strong>{{ usuarios().length }}</strong>
+            <small>Registrados</small>
+          </div>
+          <div class="card stat">
+            <span>Entrenadores</span>
+            <strong>{{ entrenadores().length }}</strong>
+            <small>En el equipo</small>
+          </div>
+          <div class="card stat">
+            <span>Códigos disponibles</span>
+            <strong>{{ codigosDisponibles() }}</strong>
+            <small>Sin usar y vigentes</small>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <a class="card action-card" routerLink="/membresias">
+            <app-icon name="membresias" [size]="28" />
+            <div>
+              <h2>Registrar pago</h2>
+              <p>Activa o renueva la membresía de un usuario.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+          <a class="card action-card" routerLink="/codigos">
+            <app-icon name="codigos" [size]="28" />
+            <div>
+              <h2>Generar código</h2>
+              <p>Entrega un código para que un cliente se registre.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+          <a class="card action-card" routerLink="/control-acceso">
+            <app-icon name="escanear" [size]="28" />
+            <div>
+              <h2>Validar acceso</h2>
+              <p>Escanea el QR de un usuario en la entrada.</p>
+            </div>
+            <app-icon name="flecha" />
+          </a>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Últimos pagos</h2>
+            <a class="btn btn-sm" routerLink="/membresias">Ver todos</a>
+          </div>
+          @if (pagos().length === 0) {
+            <p class="muted">Todavía no hay pagos registrados.</p>
+          } @else {
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Plan</th>
+                    <th>Método</th>
+                    <th class="num">Monto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of pagos().slice(0, 6); track p.id) {
+                    <tr>
+                      <td>{{ p.fecha | date: 'dd/MM/yy HH:mm' }}</td>
+                      <td>{{ nombreUsuario(p.usuarioId) }}</td>
+                      <td><span class="badge badge-accent">{{ p.planNombre }}</span></td>
+                      <td>{{ p.metodo }}</td>
+                      <td class="num mono">{{ p.monto | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</section>

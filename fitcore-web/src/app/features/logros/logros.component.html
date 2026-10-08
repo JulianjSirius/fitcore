@@ -1,0 +1,177 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Motivación</span>
+      <h1>Retos y logros</h1>
+      <p>Tus rachas de asistencia, los récords que vas rompiendo y las insignias que desbloqueas.</p>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else {
+    @if (errorAsistencia() || errorProgreso()) {
+      <p class="alert alert-error" role="alert">
+        No se pudo cargar {{ errorAsistencia() && errorProgreso() ? 'tu información' : errorAsistencia() ? 'tu asistencia' : 'tu progreso' }}.
+        Intenta de nuevo en un momento.
+      </p>
+    }
+
+    <!-- ================= MÉTRICAS ================= -->
+    <div class="grid grid-4">
+      <div class="card stat stat--accent">
+        <span>Racha actual</span>
+        <strong class="racha"><app-icon name="fuego" [size]="30" /> {{ asistencia()?.rachaActual ?? 0 }}</strong>
+        <small>{{ asistencia()?.rachaActual === 1 ? 'día seguido' : 'días seguidos' }}</small>
+      </div>
+      <div class="card stat">
+        <span>Mejor racha</span>
+        <strong>{{ asistencia()?.mejorRacha ?? 0 }}</strong>
+        <small>días seguidos</small>
+      </div>
+      <div class="card stat">
+        <span>Asistencias</span>
+        <strong>{{ asistencia()?.totalAsistencias ?? 0 }}</strong>
+        <small>{{ asistencia()?.asistenciasEsteMes ?? 0 }} este mes</small>
+      </div>
+      <div class="card stat">
+        <span>Récords personales</span>
+        <strong>{{ progreso()?.recordsPersonales ?? 0 }}</strong>
+        <small>+{{ progreso()?.kgGanados ?? 0 | number: '1.0-2' }} kg · +{{ progreso()?.repeticionesGanadas ?? 0 }} reps</small>
+      </div>
+    </div>
+
+    <div class="split">
+      <!-- ================= CALENDARIO ================= -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Últimas 6 semanas</h2>
+            <p>Cada día que escaneas tu QR en la entrada suma a tu racha.</p>
+          </div>
+        </div>
+        <div class="calendario" role="list" aria-label="Asistencia de las últimas seis semanas">
+          @for (d of diasSemana; track $index) {
+            <span class="calendario-dia-semana" aria-hidden="true">{{ d }}</span>
+          }
+          @for (dia of calendario(); track $index) {
+            @if (dia) {
+              <span
+                class="calendario-celda"
+                [class.asistio]="dia.asistio"
+                [class.hoy]="dia.esHoy"
+                [title]="(dia.fecha | date: 'fullDate') + (dia.asistio ? ' · asististe' : '')"
+                role="listitem"
+                [attr.aria-label]="(dia.fecha | date: 'mediumDate') + (dia.asistio ? ', asististe' : ', sin asistencia')"
+              ></span>
+            } @else {
+              <span aria-hidden="true"></span>
+            }
+          }
+        </div>
+        <p class="muted small leyenda">
+          <span class="calendario-celda asistio" aria-hidden="true"></span> Asististe
+          <span class="calendario-celda hoy" aria-hidden="true"></span> Hoy
+        </p>
+      </section>
+
+      <!-- ================= RETOS ================= -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Retos del mes</h2>
+            <p>Se reinician el primer día de cada mes.</p>
+          </div>
+          <app-icon name="diana" [size]="22" />
+        </div>
+        <ul class="retos">
+          @for (r of retos(); track r.codigo) {
+            <li>
+              <div class="reto-titulo">
+                <strong>{{ r.nombre }}</strong>
+                @if (r.obtenido) {
+                  <span class="badge badge-ok">¡Completado!</span>
+                } @else {
+                  <span class="mono muted">{{ r.progreso }}/{{ r.meta }}</span>
+                }
+              </div>
+              <small class="muted">{{ r.descripcion }}</small>
+              <div class="barra" role="progressbar" [attr.aria-valuenow]="r.progreso" aria-valuemin="0" [attr.aria-valuemax]="r.meta" [attr.aria-label]="r.nombre">
+                <span [style.width.%]="porcentaje(r)"></span>
+              </div>
+            </li>
+          } @empty {
+            <li class="muted small">No hay retos disponibles.</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <!-- ================= INSIGNIAS ================= -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Insignias</h2>
+          <p>{{ obtenidas() }} de {{ insignias().length }} desbloqueadas.</p>
+        </div>
+      </div>
+      <div class="insignias">
+        @for (i of insignias(); track i.codigo) {
+          <article class="insignia" [class.obtenida]="i.obtenido">
+            <span class="insignia-icono">
+              <app-icon [name]="i.obtenido ? i.icono : 'candado'" [size]="24" />
+            </span>
+            <div class="insignia-texto">
+              <strong>{{ i.nombre }}</strong>
+              <small>{{ i.descripcion }}</small>
+              @if (i.obtenido) {
+                <small class="insignia-fecha">
+                  Desbloqueada{{ i.fechaObtencion ? ' el ' + (i.fechaObtencion | date: 'mediumDate') : '' }}
+                </small>
+              } @else {
+                <div class="barra barra--fina" aria-hidden="true"><span [style.width.%]="porcentaje(i)"></span></div>
+                <small class="mono muted">{{ i.progreso }}/{{ i.meta }}</small>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <!-- ================= HISTORIAL DE PROGRESO ================= -->
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Tus mejoras</h2>
+          <p>Cada vez que subes repeticiones o peso en una rutina queda registrado aquí.</p>
+        </div>
+        <a class="btn btn-sm" routerLink="/rutinas">Ir a mis rutinas</a>
+      </div>
+      @if ((progreso()?.historial ?? []).length === 0) {
+        <p class="muted">Aún no hay mejoras. Edita una rutina y sube las repeticiones o el peso de un ejercicio.</p>
+      } @else {
+        <ul class="historial">
+          @for (p of progreso()!.historial; track p.id) {
+            <li>
+              <div class="cell-title">
+                <strong>{{ p.nombreEjercicio }}</strong>
+                <small>{{ p.fecha | date: 'mediumDate' }}</small>
+              </div>
+              <div class="historial-cambios">
+                @if (p.diferenciaRepeticiones > 0) {
+                  <span class="badge badge-ok">+{{ p.diferenciaRepeticiones }} reps ({{ p.repeticionesAnteriores }} → {{ p.repeticionesNuevas }})</span>
+                }
+                @if (p.diferenciaPesoKg > 0) {
+                  <span class="badge badge-ok">+{{ p.diferenciaPesoKg | number: '1.0-2' }} kg ({{ p.pesoAnteriorKg | number: '1.0-2' }} → {{ p.pesoNuevoKg | number: '1.0-2' }})</span>
+                }
+                @if (p.esRecordPersonal) {
+                  <span class="badge badge-accent"><app-icon name="trofeo" [size]="13" /> Récord</span>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</section>

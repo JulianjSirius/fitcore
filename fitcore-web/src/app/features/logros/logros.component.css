@@ -1,0 +1,182 @@
+.racha {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ---------- Calendario ---------- */
+.calendario {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+  max-width: 420px;
+}
+
+.calendario-dia-semana {
+  color: var(--faint);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendario-celda {
+  display: inline-block;
+  aspect-ratio: 1;
+  min-width: 14px;
+  border-radius: 6px;
+  background: var(--surface-3);
+}
+
+.calendario-celda.asistio {
+  background: var(--accent);
+}
+
+.calendario-celda.hoy {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+.leyenda {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+}
+
+.leyenda .calendario-celda {
+  width: 14px;
+  margin-left: 0.6rem;
+}
+
+.leyenda .calendario-celda:first-child {
+  margin-left: 0;
+}
+
+/* ---------- Retos ---------- */
+.retos {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.retos li {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.reto-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.barra {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+.barra--fina {
+  height: 6px;
+  margin-top: 0.3rem;
+}
+
+/* ---------- Insignias ---------- */
+.insignias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.8rem;
+}
+
+.insignia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  opacity: 0.75;
+}
+
+.insignia.obtenida {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-soft), transparent 70%), var(--surface-2);
+  opacity: 1;
+}
+
+.insignia-icono {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--faint);
+}
+
+.insignia.obtenida .insignia-icono {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.insignia-texto {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.insignia-texto small {
+  color: var(--muted);
+}
+
+.insignia-fecha {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+/* ---------- Historial ---------- */
+.historial {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historial li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.historial li:last-child {
+  border-bottom: none;
+}
+
+.historial-cambios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.historial-cambios .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}

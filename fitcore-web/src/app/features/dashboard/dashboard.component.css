@@ -1,0 +1,104 @@
+.stat strong {
+  overflow-wrap: anywhere;
+}
+
+.text-ok {
+  color: var(--ok);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.notice-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-color: rgba(251, 191, 36, 0.35);
+  background: linear-gradient(90deg, var(--warn-soft), var(--surface) 60%);
+}
+
+.notice-card h2 {
+  font-size: 1.1rem;
+}
+
+.notice-card p {
+  margin: 0.3rem 0 0;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.action-card > app-icon:first-child {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.action-card div {
+  flex: 1;
+}
+
+.action-card h2 {
+  font-size: 1rem;
+}
+
+.action-card p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.action-card > app-icon:last-child {
+  color: var(--faint);
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+
+.action-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.action-card:hover > app-icon:last-child {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+.list {
+  display: grid;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.list-row:first-child {
+  border-top: 0;
+}
+
+.list-row small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

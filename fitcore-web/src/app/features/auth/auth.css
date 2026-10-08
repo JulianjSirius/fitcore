@@ -1,0 +1,172 @@
+.auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.auth-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(200, 255, 61, 0.16), transparent 45%),
+    linear-gradient(160deg, #15181b 0%, #0d0f11 70%);
+  border-right: 1px solid var(--border);
+}
+
+.auth-hero::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  bottom: -120px;
+  width: 420px;
+  height: 420px;
+  border: 60px solid rgba(200, 255, 61, 0.05);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand span {
+  color: var(--accent);
+}
+
+.hero-copy h1 {
+  margin: 0.8rem 0 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 8vw, 6.5rem);
+  font-weight: 800;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.hero-copy em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.hero-copy p {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.back {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.plans {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.plan {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(21, 24, 27, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+.plan span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.plan strong {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.plan small {
+  color: var(--faint);
+}
+
+.auth-panel {
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.auth-card {
+  width: min(430px, 100%);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.auth-head h2 {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.auth-head p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+
+.tabs--full {
+  width: 100%;
+}
+
+.tabs--full button {
+  flex: 1;
+}
+
+.btn-lg {
+  min-height: 48px;
+  font-size: 0.95rem;
+}
+
+.auth-foot {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-hero {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.8rem, 13vw, 4rem);
+  }
+}

@@ -1,0 +1,154 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Administración</span>
+      <h1>Membresías y pagos</h1>
+      <p>Registra pagos en efectivo, transferencia o datáfono para activar o renovar membresías.</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+  }
+
+  <div class="split">
+    <!-- ================= REGISTRAR PAGO ================= -->
+    <form class="card form" #f="ngForm" (ngSubmit)="registrar(f)">
+      <div class="card-head">
+        <div>
+          <h2>Registrar pago</h2>
+          <p>El pago queda aprobado y la membresía se activa al instante.</p>
+        </div>
+      </div>
+
+      <label class="field">
+        Buscar usuario
+        <input
+          name="filtroUsuario"
+          placeholder="Nombre o correo"
+          [ngModel]="filtroUsuarioForm()"
+          (ngModelChange)="filtroUsuarioForm.set($event)"
+        />
+      </label>
+      <label class="field">
+        Usuario
+        <select name="usuarioId" [(ngModel)]="pago.usuarioId" (ngModelChange)="alCambiarUsuario()" required>
+          <option value="" disabled>Selecciona un usuario ({{ usuariosParaElegir().length }})</option>
+          @for (u of usuariosParaElegir(); track u.id) {
+            <option [value]="u.id">{{ u.firstName }} {{ u.lastName }} · {{ u.email }}</option>
+          }
+        </select>
+      </label>
+
+      @if (membresiaActual(); as m) {
+        <div class="current">
+          <span class="badge" [class.badge-ok]="m.estado === 'Activa'" [class.badge-danger]="m.estado !== 'Activa'">{{ m.estado }}</span>
+          <span>{{ m.planNombre }} · vence {{ m.fechaVencimiento | date: 'mediumDate' }}</span>
+        </div>
+      }
+
+      <fieldset class="plan-picker">
+        <legend class="field">Plan</legend>
+        @for (p of planesActivos(); track p.id) {
+          <label class="plan-option" [class.selected]="pago.planId === p.id">
+            <input type="radio" name="planId" [value]="p.id" [(ngModel)]="pago.planId" required />
+            <span class="plan-name">{{ p.nombre }}</span>
+            <strong>{{ p.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+            <small>{{ p.duracionMeses }} {{ p.duracionMeses === 1 ? 'mes' : 'meses' }}{{ p.maxBeneficiarios > 1 ? ' · ' + p.maxBeneficiarios + ' personas' : '' }}</small>
+          </label>
+        }
+      </fieldset>
+
+      @if (esDuo()) {
+        <label class="field">
+          Correo del acompañante
+          <input name="acompananteEmail" type="email" [(ngModel)]="pago.acompananteEmail" placeholder="Debe estar registrado en FitCore" required />
+        </label>
+      }
+
+      <div class="form-grid">
+        <label class="field">
+          Método
+          <select name="metodo" [(ngModel)]="pago.metodo" required>
+            @for (m of metodos; track m.valor) {
+              <option [value]="m.valor">{{ m.texto }}</option>
+            }
+          </select>
+        </label>
+        <label class="field">
+          Referencia (opcional)
+          <input name="referencia" maxlength="64" [(ngModel)]="pago.referencia" placeholder="N.º de comprobante" />
+        </label>
+      </div>
+
+      @if (resumenPago(); as resumen) {
+        <p class="alert alert-info">{{ resumen }}</p>
+      }
+      @if (errorPago()) {
+        <p class="alert alert-error" role="alert">{{ errorPago() }}</p>
+      }
+      @if (confirmacion(); as m) {
+        <p class="alert alert-ok" role="status">
+          Pago registrado. {{ m.titularNombre }} tiene {{ m.planNombre }} activo hasta el {{ m.fechaVencimiento | date: 'longDate' }}{{ m.acompananteNombre ? ', junto con ' + m.acompananteNombre : '' }}.
+        </p>
+      }
+
+      <button class="btn btn-primary btn-block" type="submit" [disabled]="f.invalid || registrando()">
+        @if (planSeleccionado(); as p) {
+          {{ registrando() ? 'Registrando…' : 'Registrar ' + (p.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0') }}
+        } @else {
+          Registrar pago
+        }
+      </button>
+    </form>
+
+    <!-- ================= HISTORIAL ================= -->
+    <div class="card history">
+      <div class="card-head">
+        <div>
+          <h2>Historial de pagos</h2>
+          <p>{{ pagosFiltrados().length }} pagos · {{ totalFiltrado() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
+        </div>
+      </div>
+      <div class="filters">
+        <select class="input" aria-label="Filtrar por usuario" [value]="filtroUsuario()" (change)="filtroUsuario.set($any($event.target).value)">
+          <option value="">Todos los usuarios</option>
+          @for (u of usuarios(); track u.id) {
+            <option [value]="u.id">{{ u.firstName }} {{ u.lastName }}</option>
+          }
+        </select>
+        <select class="input" aria-label="Filtrar por método" [value]="filtroMetodo()" (change)="filtroMetodo.set($any($event.target).value)">
+          <option value="">Todos los métodos</option>
+          @for (m of metodos; track m.valor) {
+            <option [value]="m.valor">{{ m.texto }}</option>
+          }
+        </select>
+      </div>
+
+      @if (cargando()) {
+        <app-loading-state />
+      } @else if (pagosFiltrados().length === 0) {
+        <app-empty-state title="Sin pagos" message="No hay pagos con esos filtros." />
+      } @else {
+        <ul class="payments">
+          @for (p of pagosFiltrados(); track p.id) {
+            <li>
+              <span class="pay-icon" aria-hidden="true"><app-icon name="membresias" [size]="16" /></span>
+              <div class="cell-title">
+                <strong>{{ nombreUsuario(p.usuarioId) }}</strong>
+                <small>
+                  {{ p.planNombre }} · {{ p.metodo }} · {{ p.fecha | date: 'dd/MM/yy HH:mm' }}
+                  @if (p.acompananteUsuarioId) {
+                    · con {{ nombreUsuario(p.acompananteUsuarioId) }}
+                  }
+                </small>
+                <small class="mono">{{ p.referencia }}</small>
+              </div>
+              <strong class="mono amount">{{ p.monto | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+</section>

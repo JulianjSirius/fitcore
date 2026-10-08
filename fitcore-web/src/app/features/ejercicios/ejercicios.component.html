@@ -1,0 +1,101 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Biblioteca</span>
+      <h1>Ejercicios</h1>
+      <p>{{ ejercicios().length }} movimientos disponibles para armar rutinas.</p>
+    </div>
+    @if (puedeGestionar()) {
+      <button type="button" class="btn btn-primary" (click)="nuevo()">
+        <app-icon name="mas" /> Nuevo ejercicio
+      </button>
+    }
+  </header>
+
+  @if (aviso()) {
+    <p class="alert alert-ok" role="status">{{ aviso() }}</p>
+  }
+
+  @if (editorAbierto()) {
+    <section class="card editor" id="editor-ejercicio">
+      <div class="card-head">
+        <h2>{{ editandoId ? 'Editar ejercicio' : 'Nuevo ejercicio' }}</h2>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="cerrar()"><app-icon name="cerrar" /> Cancelar</button>
+      </div>
+      <form class="form" #f="ngForm" (ngSubmit)="guardar(f)">
+        <div class="form-grid">
+          <label class="field">
+            Nombre
+            <input name="nombre" [(ngModel)]="draft.nombre" placeholder="Press de banca" required />
+          </label>
+          <label class="field">
+            Grupo muscular
+            <input name="grupo" [(ngModel)]="draft.grupoMuscular" placeholder="Pecho" list="grupos-musculares" required />
+            <datalist id="grupos-musculares">
+              @for (g of grupos(); track g) {
+                <option [value]="g"></option>
+              }
+            </datalist>
+          </label>
+          <label class="field full">
+            Descripción orientativa
+            <textarea name="descripcion" rows="3" [(ngModel)]="draft.descripcionOrientativa" placeholder="Cómo se ejecuta y qué cuidar" required></textarea>
+          </label>
+        </div>
+        @if (formError()) {
+          <p class="alert alert-error" role="alert">{{ formError() }}</p>
+        }
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">
+            <app-icon name="check" /> {{ guardando() ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Agregar ejercicio' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (loading()) {
+    <app-loading-state />
+  } @else if (errorMessage()) {
+    <p class="alert alert-error">{{ errorMessage() }}</p>
+  } @else if (ejercicios().length === 0) {
+    <app-empty-state title="Biblioteca vacía" message="Todavía no hay ejercicios registrados." />
+  } @else {
+    <div class="toolbar">
+      <label class="search">
+        <span class="visually-hidden">Buscar ejercicio</span>
+        <input class="input" placeholder="Buscar ejercicio" [value]="busqueda()" (input)="filtrar($any($event.target).value)" />
+      </label>
+      <select class="input group-select" aria-label="Grupo muscular" [value]="grupo()" (change)="elegirGrupo($any($event.target).value)">
+        <option value="">Todos los grupos ({{ ejercicios().length }})</option>
+        @for (g of grupos(); track g) {
+          <option [value]="g">{{ g }}</option>
+        }
+      </select>
+    </div>
+
+    @if (filtrados().length === 0) {
+      <app-empty-state title="Sin coincidencias" message="Prueba con otra búsqueda o grupo muscular." />
+    } @else {
+      <p class="muted count">Mostrando {{ pagina().length }} de {{ filtrados().length }}</p>
+      <div class="exercise-grid">
+        @for (e of pagina(); track e.id) {
+          <article class="card exercise">
+            <span class="badge badge-accent">{{ e.grupoMuscular }}</span>
+            <h2>{{ e.nombre }}</h2>
+            <p>{{ e.descripcionOrientativa || 'Sin descripción.' }}</p>
+            @if (puedeGestionar()) {
+              <div class="actions exercise-actions">
+                <button type="button" class="btn btn-sm" (click)="editar(e)"><app-icon name="editar" [size]="15" /> Editar</button>
+                <button type="button" class="btn btn-sm btn-danger" (click)="eliminar(e)"><app-icon name="borrar" [size]="15" /> Eliminar</button>
+              </div>
+            }
+          </article>
+        }
+      </div>
+      @if (pagina().length < filtrados().length) {
+        <button type="button" class="btn more" (click)="verMas()">Ver más ejercicios</button>
+      }
+    }
+  }
+</section>

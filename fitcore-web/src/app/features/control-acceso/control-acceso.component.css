@@ -1,0 +1,140 @@
+.scanner {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+
+.scanner-idle {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  color: var(--accent);
+  text-align: center;
+}
+
+.scanner-idle p {
+  max-width: 36ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+.video-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame {
+  position: absolute;
+  inset: 18%;
+  border: 3px solid var(--accent);
+  border-radius: 16px;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+}
+
+.waiting {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border-style: dashed;
+}
+
+.verdict {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 2rem 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.verdict .details {
+  width: 100%;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.verdict--ok {
+  border-color: var(--ok);
+  background: linear-gradient(180deg, var(--ok-soft), var(--surface) 55%);
+}
+
+.verdict--no {
+  border-color: var(--danger);
+  background: linear-gradient(180deg, var(--danger-soft), var(--surface) 55%);
+}
+
+.verdict-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.verdict--ok .verdict-icon {
+  background: var(--ok);
+  color: var(--accent-ink);
+}
+
+.verdict--no .verdict-icon {
+  background: var(--danger);
+  color: var(--accent-ink);
+}
+
+.verdict-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.verdict--ok .verdict-title {
+  color: var(--ok);
+}
+
+.verdict--no .verdict-title {
+  color: var(--danger);
+}
+
+.verdict-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.history {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.history li:first-child {
+  border-top: 0;
+}
+
+.history-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

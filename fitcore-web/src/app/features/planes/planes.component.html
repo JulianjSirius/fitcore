@@ -1,0 +1,74 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Membresías</span>
+      <h1>Planes</h1>
+      <p>
+        @if (esAdmin()) {
+          Ajusta precios, duración y disponibilidad. Los cambios aplican a los pagos nuevos; las membresías ya pagadas no cambian.
+        } @else {
+          Elige tu plan y registra el pago en recepción.
+        }
+      </p>
+    </div>
+  </header>
+
+  @if (aviso()) {
+    <p class="alert alert-ok" role="status">{{ aviso() }}</p>
+  }
+  @if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+  }
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else {
+    <div class="plans">
+      @for (p of visibles(); track p.id) {
+        <article class="card plan" [class.plan--featured]="p.codigo === 'Anual'" [class.plan--off]="!p.activo">
+          @if (editando() === p.id && borrador) {
+            <form class="form" (ngSubmit)="guardar()">
+              <label class="field">Nombre<input name="nombre" [(ngModel)]="borrador.nombre" required /></label>
+              <label class="field">Precio (COP)<input name="precio" type="number" min="1" step="1000" [(ngModel)]="borrador.precio" required /></label>
+              <label class="field">Duración (meses)<input name="duracion" type="number" min="1" max="24" [(ngModel)]="borrador.duracionMeses" required /></label>
+              <label class="check"><input type="checkbox" name="activo" [(ngModel)]="borrador.activo" /> Disponible para nuevos pagos</label>
+              <div class="actions">
+                <button class="btn btn-primary btn-sm" type="submit" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Guardar' }}</button>
+                <button class="btn btn-ghost btn-sm" type="button" (click)="cancelar()">Cancelar</button>
+              </div>
+            </form>
+          } @else {
+            <div class="plan-top">
+              <span class="plan-name">{{ p.nombre }}</span>
+              @if (p.codigo === 'Anual') {
+                <span class="badge badge-accent">Mejor precio</span>
+              }
+              @if (!p.activo) {
+                <span class="badge badge-danger">Inactivo</span>
+              }
+            </div>
+            <strong class="price">{{ p.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+            <span class="muted">
+              {{ p.duracionMeses }} {{ p.duracionMeses === 1 ? 'mes' : 'meses' }} ·
+              {{ p.maxBeneficiarios }} {{ p.maxBeneficiarios === 1 ? 'persona' : 'personas' }}
+            </span>
+            @if (p.duracionMeses > 1 || p.maxBeneficiarios > 1) {
+              <span class="per-month">≈ {{ precioMensual(p) | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} por persona al mes</span>
+            }
+            <ul class="benefits">
+              @for (b of beneficios(p); track b) {
+                <li><app-icon name="check" [size]="15" /> {{ b }}</li>
+              }
+            </ul>
+            @if (esAdmin()) {
+              <div class="plan-foot">
+                <small class="muted">Actualizado {{ p.fechaActualizacion | date: 'mediumDate' }}</small>
+                <button type="button" class="btn btn-sm" (click)="editar(p)"><app-icon name="editar" [size]="15" /> Editar</button>
+              </div>
+            }
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

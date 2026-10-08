@@ -1,0 +1,138 @@
+.list-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.avatar--lg {
+  width: 48px;
+  height: 48px;
+  font-size: 1rem;
+}
+
+aside {
+  position: sticky;
+  top: 1rem;
+  min-width: 0;
+  scroll-margin-top: 1rem;
+}
+
+.detail .cell-title {
+  min-width: 0;
+}
+
+.detail .cell-title small {
+  overflow-wrap: anywhere;
+}
+
+.detail {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.detail .card-head {
+  margin-bottom: 0;
+}
+
+.detail-name {
+  font-size: 1.1rem;
+}
+
+.edit-btn {
+  justify-self: start;
+}
+
+.section-title {
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.membership {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+}
+
+.membership--off {
+  border-color: rgba(255, 107, 107, 0.35);
+  background: var(--danger-soft);
+}
+
+.membership > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mini-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mini-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.mini-list li:first-child {
+  border-top: 0;
+}
+
+.placeholder {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  border-style: dashed;
+  color: var(--faint);
+  text-align: center;
+}
+
+.small {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 980px) {
+  aside {
+    position: static;
+  }
+}

@@ -1,0 +1,92 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Recepción</span>
+      <h1>Control de acceso</h1>
+      <p>Escanea el QR que muestra el usuario en “Mi acceso”. Cada código dura un minuto.</p>
+    </div>
+  </header>
+
+  <div class="split">
+    <div class="grid">
+      <div class="card scanner">
+        @if (camaraActiva()) {
+          <div class="video-wrap">
+            <video #video playsinline muted></video>
+            <span class="frame" aria-hidden="true"></span>
+          </div>
+          <button type="button" class="btn" (click)="detenerCamara()"><app-icon name="cerrar" /> Detener cámara</button>
+        } @else if (soportaCamara) {
+          <div class="scanner-idle">
+            <app-icon name="camara" [size]="40" />
+            <p>Usa la cámara de este equipo para leer el código.</p>
+            <button type="button" class="btn btn-primary" (click)="iniciarCamara()">Activar cámara</button>
+          </div>
+        } @else {
+          <div class="scanner-idle">
+            <app-icon name="escanear" [size]="40" />
+            <p>Este navegador no puede leer QR con la cámara. Usa un lector externo o pega el código abajo.</p>
+          </div>
+        }
+        @if (errorCamara()) {
+          <p class="alert alert-error">{{ errorCamara() }}</p>
+        }
+      </div>
+
+      <form class="card form" (ngSubmit)="validarManual()">
+        <label class="field">
+          Código leído (texto del QR)
+          <textarea class="mono" name="token" rows="3" [(ngModel)]="tokenManual" placeholder="Pega aquí el contenido del QR"></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit" [disabled]="!tokenManual.trim() || validando()">
+          {{ validando() ? 'Validando…' : 'Validar acceso' }}
+        </button>
+      </form>
+    </div>
+
+    <div class="grid">
+      @if (resultado(); as r) {
+        <div class="card verdict" [class.verdict--ok]="r.permitido" [class.verdict--no]="!r.permitido" role="status">
+          <span class="verdict-icon" aria-hidden="true">{{ r.permitido ? '✓' : '✕' }}</span>
+          <strong class="verdict-title">{{ r.permitido ? 'Acceso permitido' : 'Acceso denegado' }}</strong>
+          @if (r.nombre) {
+            <span class="verdict-name">{{ r.nombre }}</span>
+          }
+          <dl class="details">
+            @if (r.plan) {
+              <div><dt>Plan</dt><dd>{{ r.plan }}</dd></div>
+            }
+            @if (r.fechaVencimiento) {
+              <div><dt>Vence</dt><dd>{{ r.fechaVencimiento | date: 'mediumDate' }}</dd></div>
+            }
+            <div><dt>Motivo</dt><dd>{{ r.motivo }}</dd></div>
+          </dl>
+        </div>
+      } @else {
+        <div class="card waiting">
+          <p class="muted">El resultado de la validación aparecerá aquí.</p>
+        </div>
+      }
+      @if (error()) {
+        <p class="alert alert-error">{{ error() }}</p>
+      }
+
+      @if (historial().length > 0) {
+        <div class="card">
+          <div class="card-head"><h2>Últimas validaciones</h2></div>
+          <ul class="history">
+            @for (h of historial(); track h.hora) {
+              <li>
+                <span class="badge" [class.badge-ok]="h.permitido" [class.badge-danger]="!h.permitido">
+                  {{ h.permitido ? 'Permitido' : 'Denegado' }}
+                </span>
+                <span class="history-name">{{ h.nombre || h.motivo }}</span>
+                <span class="muted mono">{{ h.hora | date: 'HH:mm:ss' }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</section>

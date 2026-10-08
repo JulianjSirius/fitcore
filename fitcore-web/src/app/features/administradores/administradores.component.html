@@ -1,0 +1,129 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Administración</span>
+      <h1>Administradores</h1>
+      <p>
+        @if (esDueno()) {
+          Como Dueño puedes crear, editar y eliminar administradores.
+        } @else {
+          Solo el Dueño puede crear, editar o eliminar administradores.
+        }
+      </p>
+    </div>
+    @if (esDueno()) {
+      <button type="button" class="btn btn-primary" (click)="nuevo()"><app-icon name="mas" /> Nuevo administrador</button>
+    }
+  </header>
+
+  @if (aviso()) {
+    <p class="alert alert-ok" role="status">{{ aviso() }}</p>
+  }
+  @if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+  }
+
+  @if (editorAbierto()) {
+    <section class="card editor" id="editor-admin">
+      <div class="card-head">
+        <h2>{{ editandoId ? 'Editar administrador' : 'Nuevo administrador' }}</h2>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="cerrar()"><app-icon name="cerrar" /> Cancelar</button>
+      </div>
+      <form class="form" #f="ngForm" (ngSubmit)="guardar(f)">
+        <div class="form-grid">
+          <label class="field">Nombre<input name="nombre" [(ngModel)]="form.nombre" required /></label>
+          <label class="field">Apellido<input name="lastName" [(ngModel)]="form.lastName" required /></label>
+          <label class="field">Correo<input name="email" type="email" [(ngModel)]="form.email" required /></label>
+          <label class="field">Teléfono<input name="telefono" type="number" min="1000000000" max="9999999999" [(ngModel)]="form.telefono" required /></label>
+          <label class="field">
+            Nivel de acceso
+            <select name="nivelAcceso" [(ngModel)]="form.nivelAcceso" required>
+              <option value="" disabled>Selecciona un nivel</option>
+              @for (n of niveles; track n) {
+                <option [value]="n">{{ n }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            {{ editandoId ? 'Nueva contraseña' : 'Contraseña inicial' }}
+            <input name="contrasena" type="password" minlength="6" [(ngModel)]="form.contrasena" required />
+          </label>
+        </div>
+        <p class="muted small">
+          El nivel “Dueño” da control total (incluido administrar a otros administradores).
+          @if (editandoId) {
+            La API reemplaza la contraseña en cada actualización.
+          }
+        </p>
+        @if (errorForm()) {
+          <p class="alert alert-error">{{ errorForm() }}</p>
+        }
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">
+            <app-icon name="check" /> {{ guardando() ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Crear administrador' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else if (administradores().length === 0) {
+    <app-empty-state title="Sin administradores" message="No hay administradores registrados." />
+  } @else {
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Administrador</th>
+              <th>Nivel</th>
+              <th>Teléfono</th>
+              @if (esDueno()) {
+                <th><span class="visually-hidden">Acciones</span></th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (a of ordenados(); track a.id) {
+              <tr>
+                <td>
+                  <div class="cell-title">
+                    <strong>
+                      {{ a.nombre }} {{ a.lastName }}
+                      @if (a.id === miId()) {
+                        <span class="badge badge-accent">Tú</span>
+                      }
+                    </strong>
+                    <small>{{ a.email }}</small>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-accent]="a.nivelAcceso === 'Dueño'">{{ a.nivelAcceso }}</span>
+                </td>
+                <td class="mono">{{ a.telefono }}</td>
+                @if (esDueno()) {
+                  <td class="num">
+                    <div class="actions row-actions">
+                      <button type="button" class="btn btn-sm" (click)="editar(a)"><app-icon name="editar" [size]="15" /> Editar</button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        [disabled]="a.id === miId()"
+                        [title]="a.id === miId() ? 'No puedes eliminar tu propia cuenta' : 'Eliminar'"
+                        (click)="eliminar(a)"
+                      >
+                        <app-icon name="borrar" [size]="15" />
+                      </button>
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>

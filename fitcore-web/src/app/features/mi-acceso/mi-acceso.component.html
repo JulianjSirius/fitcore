@@ -1,0 +1,86 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Mi acceso</span>
+      <h1>Tu pase de entrada</h1>
+      <p>Muestra este código en recepción. Se renueva solo cada minuto.</p>
+    </div>
+  </header>
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else {
+    <div class="access">
+      <div class="card qr-card">
+        @if (token()) {
+          <div class="qr-frame">
+            <qrcode
+              [qrdata]="token()"
+              [width]="260"
+              [margin]="1"
+              errorCorrectionLevel="M"
+              elementType="svg"
+              colorDark="#0d0f11"
+              colorLight="#ffffff"
+              ariaLabel="Código QR de acceso"
+              alt="Código QR de acceso"
+            />
+          </div>
+          <div class="timer" [class.timer--low]="segundosRestantes() <= 15">
+            <span class="timer-bar" [style.width.%]="(segundosRestantes() / 60) * 100"></span>
+          </div>
+          <p class="timer-label">Válido por {{ segundosRestantes() }} s</p>
+        } @else if (errorQr()) {
+          <p class="alert alert-error">{{ errorQr() }}</p>
+          @if (membresiaActiva()) {
+            <button type="button" class="btn btn-primary" (click)="pedirToken()">Generar código</button>
+          }
+        } @else if (sinMembresia()) {
+          <div class="no-access">
+            <span class="lock" aria-hidden="true">✕</span>
+            <p>{{ sinMembresia() }}</p>
+            <a class="btn" routerLink="/planes">Ver planes</a>
+          </div>
+        } @else {
+          <app-loading-state />
+        }
+      </div>
+
+      @if (membresia(); as m) {
+        <div class="card">
+          <div class="card-head">
+            <h2>Tu membresía</h2>
+            <span class="badge" [class.badge-ok]="m.estado === 'Activa'" [class.badge-danger]="m.estado !== 'Activa'">
+              {{ m.estado }}
+            </span>
+          </div>
+          <dl class="details">
+            <div>
+              <dt>Plan</dt>
+              <dd>{{ m.planNombre }}</dd>
+            </div>
+            <div>
+              <dt>Inicio</dt>
+              <dd>{{ m.fechaInicio | date: 'longDate' }}</dd>
+            </div>
+            <div>
+              <dt>Vence</dt>
+              <dd>{{ m.fechaVencimiento | date: 'longDate' }}</dd>
+            </div>
+            <div>
+              <dt>Titular</dt>
+              <dd>{{ m.titularNombre }}</dd>
+            </div>
+            @if (m.acompananteNombre) {
+              <div>
+                <dt>Acompañante (Duo)</dt>
+                <dd>{{ m.acompananteNombre }}</dd>
+              </div>
+            }
+          </dl>
+          <p class="muted hint">Para renovar, registra tu pago en recepción antes de la fecha de vencimiento.</p>
+        </div>
+      }
+    </div>
+  }
+</section>

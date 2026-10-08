@@ -1,0 +1,82 @@
+<main class="auth">
+  <section class="auth-hero">
+    <a class="back" routerLink="/login">← Volver a iniciar sesión</a>
+    <div class="hero-copy">
+      <span class="eyebrow">Registro de usuarios</span>
+      <h1>Empieza<br /><em>hoy.</em></h1>
+      <p>
+        Pide en recepción tu código de registro. Con él creas tu cuenta, y cuando registren tu pago
+        tendrás tu acceso con QR y tus rutinas.
+      </p>
+    </div>
+    <span class="brand">FIT<span>CORE</span></span>
+  </section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>Crear cuenta</h2>
+        <p>El código es de un solo uso y lo entrega un administrador.</p>
+      </div>
+
+      <form class="form" (ngSubmit)="submit()" #registrationForm="ngForm">
+        <label class="field">
+          Código de registro
+          <input
+            class="mono"
+            name="codigoRegistro"
+            [(ngModel)]="form.codigoRegistro"
+            placeholder="K7M2QX9PLA"
+            autocomplete="off"
+            required
+          />
+        </label>
+        <div class="form-grid">
+          <label class="field">Nombre<input name="firstName" [(ngModel)]="form.firstName" autocomplete="given-name" required /></label>
+          <label class="field">Apellido<input name="lastName" [(ngModel)]="form.lastName" autocomplete="family-name" required /></label>
+        </div>
+        <label class="field">
+          Correo electrónico
+          <input name="email" type="email" [(ngModel)]="form.email" placeholder="tu@correo.com" autocomplete="email" required />
+        </label>
+        <label class="field">
+          Teléfono (10 dígitos)
+          <input
+            name="telefono"
+            type="number"
+            [(ngModel)]="form.telefono"
+            min="1000000000"
+            max="9999999999"
+            step="1"
+            placeholder="3001234567"
+            autocomplete="tel"
+            required
+          />
+        </label>
+        <label class="field">
+          Contraseña
+          <input
+            name="contrasena"
+            type="password"
+            [(ngModel)]="form.contrasena"
+            placeholder="Mínimo 6 caracteres"
+            minlength="6"
+            autocomplete="new-password"
+            required
+          />
+        </label>
+
+        @if (errorMessage()) {
+          <p class="alert alert-error" role="alert">{{ errorMessage() }}</p>
+        }
+        @if (successMessage()) {
+          <p class="alert alert-ok" role="status">{{ successMessage() }}</p>
+        }
+
+        <button class="btn btn-primary btn-block btn-lg" type="submit" [disabled]="registrationForm.invalid || loading()">
+          {{ loading() ? 'Registrando…' : 'Crear cuenta' }}
+        </button>
+      </form>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,21 @@
+.editor {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  scroll-margin-top: 1rem;
+}
+
+.small {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.cell-title strong {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.row-actions {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}

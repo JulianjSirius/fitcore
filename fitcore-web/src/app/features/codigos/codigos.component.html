@@ -1,0 +1,112 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Administración</span>
+      <h1>Códigos de registro</h1>
+      <p>Cada código permite crear una sola cuenta de usuario. Entrégalo al cliente para que se registre.</p>
+    </div>
+  </header>
+
+  <div class="split">
+    <div class="grid">
+      <form class="card form" (ngSubmit)="generar()">
+        <div class="card-head">
+          <h2>Generar código</h2>
+        </div>
+        <label class="field">
+          Vigencia (días)
+          <input name="diasVigencia" type="number" min="1" max="90" [(ngModel)]="diasVigencia" required />
+        </label>
+        <div class="quick">
+          @for (d of [1, 7, 30]; track d) {
+            <button type="button" class="btn btn-sm" [class.btn-primary]="diasVigencia === d" (click)="diasVigencia = d">{{ d }} {{ d === 1 ? 'día' : 'días' }}</button>
+          }
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" [disabled]="generando() || diasVigencia < 1 || diasVigencia > 90">
+          <app-icon name="mas" /> {{ generando() ? 'Generando…' : 'Generar código' }}
+        </button>
+        @if (error()) {
+          <p class="alert alert-error">{{ error() }}</p>
+        }
+      </form>
+
+      @if (ultimo(); as c) {
+        <div class="card code-card">
+          <span class="eyebrow">Código nuevo</span>
+          <strong class="code">{{ c.codigo }}</strong>
+          <small class="muted">Vence el {{ c.fechaExpiracion | date: 'medium' }}</small>
+          <button type="button" class="btn" (click)="copiar(c.codigo)">
+            <app-icon [name]="copiado() ? 'check' : 'copiar'" /> {{ copiado() ? 'Copiado' : 'Copiar código' }}
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="card list">
+      <div class="tabs" role="tablist" aria-label="Filtrar por estado">
+        @for (e of estados; track e) {
+          <button type="button" role="tab" [attr.aria-selected]="filtro() === e" (click)="filtro.set(e)">
+            {{ e || 'Todos' }} <span class="count">{{ conteo()[e] }}</span>
+          </button>
+        }
+      </div>
+
+      @if (cargando()) {
+        <app-loading-state />
+      } @else if (filtrados().length === 0) {
+        <app-empty-state title="Sin códigos" message="No hay códigos con este estado." />
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Estado</th>
+                <th>Creado</th>
+                <th>Vence</th>
+                <th>Usado por</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of filtrados(); track c.id) {
+                <tr>
+                  <td>
+                    <button type="button" class="code-btn mono" title="Copiar" (click)="copiar(c.codigo)">{{ c.codigo }}</button>
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [class.badge-ok]="estado(c) === 'Disponible'"
+                      [class.badge-info]="estado(c) === 'Usado'"
+                      [class.badge-danger]="estado(c) === 'Vencido'"
+                      >{{ estado(c) }}</span
+                    >
+                  </td>
+                  <td>
+                    <div class="cell-title">
+                      <span>{{ c.fechaCreacion | date: 'dd/MM/yy HH:mm' }}</span>
+                      @if (nombreAdmin(c.creadoPorAdministradorId); as admin) {
+                        <small>{{ admin }}</small>
+                      }
+                    </div>
+                  </td>
+                  <td>{{ c.fechaExpiracion | date: 'dd/MM/yy HH:mm' }}</td>
+                  <td>
+                    @if (c.usadoPorUsuarioId) {
+                      <div class="cell-title">
+                        <span>{{ nombreUsuario(c.usadoPorUsuarioId) || 'Usuario' }}</span>
+                        <small>{{ c.fechaUso | date: 'dd/MM/yy HH:mm' }}</small>
+                      </div>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,69 @@
+@if (auth.isAuthenticated()) {
+  <div class="shell" [class.shell--abierto]="menuAbierto()">
+    <header class="mobile-bar">
+      <a class="brand" routerLink="/dashboard">FIT<span>CORE</span></a>
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        [attr.aria-expanded]="menuAbierto()"
+        aria-controls="menu-principal"
+        (click)="menuAbierto.set(!menuAbierto())"
+      >
+        <app-icon [name]="menuAbierto() ? 'cerrar' : 'menu'" [size]="22" />
+        <span class="visually-hidden">Menú</span>
+      </button>
+    </header>
+
+    <aside class="sidebar" id="menu-principal">
+      <a class="brand brand--sidebar" routerLink="/dashboard">FIT<span>CORE</span></a>
+
+      <nav aria-label="Navegación principal">
+        @for (grupo of menu(); track grupo.titulo) {
+          <div class="nav-group">
+            <span class="nav-title">{{ grupo.titulo }}</span>
+            @for (enlace of grupo.enlaces; track enlace.ruta) {
+              <a
+                class="nav-link"
+                [routerLink]="enlace.ruta"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: enlace.ruta === '/dashboard' }"
+              >
+                <app-icon [name]="enlace.icono" />
+                {{ enlace.texto }}
+              </a>
+            }
+          </div>
+        }
+      </nav>
+
+      <div class="account">
+        <span class="avatar" aria-hidden="true">{{ iniciales() }}</span>
+        <div class="account-info">
+          <strong>{{ auth.currentUser()?.email }}</strong>
+          <small>
+            {{ auth.role() }}
+            @if (auth.currentUser()?.nivelAcceso; as nivel) {
+              · {{ nivel }}
+            }
+          </small>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" title="Cerrar sesión" (click)="auth.logout()">
+          <app-icon name="salir" />
+          <span class="visually-hidden">Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <button
+      type="button"
+      class="scrim"
+      aria-label="Cerrar menú"
+      tabindex="-1"
+      (click)="menuAbierto.set(false)"
+    ></button>
+
+    <main class="content"><router-outlet /></main>
+  </div>
+} @else {
+  <router-outlet />
+}

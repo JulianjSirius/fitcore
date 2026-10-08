@@ -1,0 +1,91 @@
+<section class="page">
+  <header class="page-head">
+    <div>
+      <span class="eyebrow">Equipo</span>
+      <h1>Entrenadores</h1>
+      <p>{{ entrenadores().length }} entrenadores en el gimnasio.</p>
+    </div>
+    @if (esAdmin()) {
+      <button type="button" class="btn btn-primary" (click)="nuevo()"><app-icon name="mas" /> Nuevo entrenador</button>
+    }
+  </header>
+
+  @if (aviso()) {
+    <p class="alert alert-ok" role="status">{{ aviso() }}</p>
+  }
+
+  @if (editorAbierto()) {
+    <section class="card editor" id="editor-entrenador">
+      <div class="card-head">
+        <div>
+          <h2>{{ editandoId ? 'Editar entrenador' : 'Nuevo entrenador' }}</h2>
+          <p>{{ editandoId ? 'Solo el Dueño puede editar entrenadores.' : 'Podrá iniciar sesión con este correo y contraseña.' }}</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="cerrar()"><app-icon name="cerrar" /> Cancelar</button>
+      </div>
+      <form class="form" #f="ngForm" (ngSubmit)="guardar(f)">
+        <div class="form-grid">
+          <label class="field">Nombre completo<input name="nombre" [(ngModel)]="form.nombre" required /></label>
+          <label class="field">Especialidad<input name="especialidad" [(ngModel)]="form.especialidad" placeholder="Fuerza, funcional, yoga…" required /></label>
+          <label class="field">Horario<input name="horario" [(ngModel)]="form.horario" placeholder="Lunes a viernes 6:00–12:00" required /></label>
+          <label class="field">Teléfono<input name="telefono" type="number" min="1000000000" max="9999999999" [(ngModel)]="form.telefono" required /></label>
+          <label class="field">Correo<input name="email" type="email" [(ngModel)]="form.email" required /></label>
+          <label class="field">
+            {{ editandoId ? 'Nueva contraseña' : 'Contraseña inicial' }}
+            <input name="contrasena" type="password" minlength="6" [(ngModel)]="form.contrasena" required />
+          </label>
+        </div>
+        @if (editandoId) {
+          <p class="muted small">La API reemplaza la contraseña en cada actualización: comunícale la nueva al entrenador.</p>
+        }
+        @if (errorForm()) {
+          <p class="alert alert-error">{{ errorForm() }}</p>
+        }
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" [disabled]="f.invalid || guardando()">
+            <app-icon name="check" /> {{ guardando() ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Crear entrenador' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (cargando()) {
+    <app-loading-state />
+  } @else if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+  } @else if (entrenadores().length === 0) {
+    <app-empty-state title="Sin entrenadores" message="Todavía no hay entrenadores registrados." />
+  } @else {
+    <label class="search">
+      <span class="visually-hidden">Buscar entrenador</span>
+      <input class="input" placeholder="Buscar por nombre, especialidad o correo" [value]="busqueda()" (input)="busqueda.set($any($event.target).value)" />
+    </label>
+    <div class="trainer-grid">
+      @for (e of filtrados(); track e.id) {
+        <article class="card trainer" [class.trainer--me]="e.id === miId()">
+          <div class="trainer-top">
+            <span class="avatar" aria-hidden="true">{{ e.nombre.charAt(0) }}</span>
+            <div class="cell-title">
+              <strong>{{ e.nombre }}</strong>
+              <small>{{ e.email }}</small>
+            </div>
+            @if (e.id === miId()) {
+              <span class="badge badge-accent">Tú</span>
+            }
+          </div>
+          <span class="badge badge-info specialty">{{ e.especialidad }}</span>
+          <dl class="details">
+            <div><dt>Horario</dt><dd>{{ e.horario }}</dd></div>
+            <div><dt>Teléfono</dt><dd class="mono">{{ e.telefono }}</dd></div>
+          </dl>
+          @if (esDueno()) {
+            <button type="button" class="btn btn-sm" (click)="editar(e)"><app-icon name="editar" [size]="15" /> Editar</button>
+          }
+        </article>
+      } @empty {
+        <app-empty-state title="Sin coincidencias" message="Prueba con otra búsqueda." />
+      }
+    </div>
+  }
+</section>

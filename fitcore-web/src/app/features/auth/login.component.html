@@ -1,0 +1,79 @@
+<main class="auth">
+  <section class="auth-hero">
+    <span class="brand">FIT<span>CORE</span></span>
+    <div class="hero-copy">
+      <span class="eyebrow">Tu gimnasio, en un solo lugar</span>
+      <h1>Entrena<br />sin <em>límites.</em></h1>
+      <p>Rutinas, membresías y acceso con QR para usuarios, entrenadores y administradores.</p>
+    </div>
+
+    @if (planes().length > 0) {
+      <div class="plans">
+        @for (plan of planes(); track plan.id) {
+          <div class="plan">
+            <span>{{ plan.nombre }}</span>
+            <strong>{{ plan.precio | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+            <small>
+              {{ plan.duracionMeses }} {{ plan.duracionMeses === 1 ? 'mes' : 'meses' }}
+              @if (plan.maxBeneficiarios > 1) {
+                · {{ plan.maxBeneficiarios }} personas
+              }
+            </small>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>Iniciar sesión</h2>
+        <p>Elige tu tipo de cuenta e ingresa tus credenciales.</p>
+      </div>
+
+      <form class="form" (ngSubmit)="submit()" #loginForm="ngForm">
+        <div class="tabs tabs--full" role="tablist" aria-label="Tipo de cuenta">
+          @for (tipo of tipos; track tipo.valor) {
+            <button
+              type="button"
+              role="tab"
+              [attr.aria-selected]="accountType === tipo.valor"
+              (click)="accountType = tipo.valor"
+            >
+              {{ tipo.texto }}
+            </button>
+          }
+        </div>
+
+        <label class="field">
+          Correo electrónico
+          <input name="email" type="email" [(ngModel)]="email" placeholder="tu@correo.com" autocomplete="email" required />
+        </label>
+        <label class="field">
+          Contraseña
+          <input
+            name="password"
+            type="password"
+            [(ngModel)]="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </label>
+
+        @if (errorMessage()) {
+          <p class="alert alert-error" role="alert">{{ errorMessage() }}</p>
+        }
+
+        <button class="btn btn-primary btn-block btn-lg" type="submit" [disabled]="loginForm.invalid || loading()">
+          {{ loading() ? 'Validando…' : 'Entrar' }}
+        </button>
+      </form>
+
+      <p class="auth-foot">
+        ¿Tienes un código de registro? <a routerLink="/registro">Crea tu cuenta</a>
+      </p>
+    </div>
+  </section>
+</main>

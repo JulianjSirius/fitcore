@@ -1,0 +1,6 @@
+@FitCore.Identity.API_HostAddress = http://localhost:5231
+
+GET {{FitCore.Identity.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
