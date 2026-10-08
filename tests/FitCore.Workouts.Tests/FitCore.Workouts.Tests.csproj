@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Services\Workouts\FitCore.Workouts.API\FitCore.Workouts.API.csproj" />
+  </ItemGroup>
+
+</Project>

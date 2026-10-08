@@ -1,0 +1,132 @@
+using FitCore.Identity.Application.Features.Usuarios.Commands;
+using FitCore.Identity.Application.Features.Usuarios.Queries;
+using FitCore.Identity.Application.Abstractions;
+using FitCore.Identity.Domain;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace FitCore.Identity.Application.Features.Usuarios.Handlers;
+
+public sealed class GetUsuariosQueryHandler
+    : IRequestHandler<GetUsuariosQuery, IReadOnlyList<UsuarioResult>>
+{
+    private readonly IAppDbContext _context;
+
+    public GetUsuariosQueryHandler(IAppDbContext context) => _context = context;
+
+    public async Task<IReadOnlyList<UsuarioResult>> Handle(
+        GetUsuariosQuery request,
+        CancellationToken cancellationToken)
+        => await _context.Users
+            .Select(u => new UsuarioResult(
+                u.Id, u.FirstName, u.LastName, u.Email, u.Telefono))
+            .ToListAsync(cancellationToken);
+}
+
+public sealed class GetUsuarioByIdQueryHandler
+    : IRequestHandler<GetUsuarioByIdQuery, UsuarioResult?>
+{
+    private readonly IAppDbContext _context;
+
+    public GetUsuarioByIdQueryHandler(IAppDbContext context) => _context = context;
+
+    public async Task<UsuarioResult?> Handle(
+        GetUsuarioByIdQuery request,
+        CancellationToken cancellationToken)
+        => await _context.Users
+            .Where(u => u.Id == request.Id)
+            .Select(u => new UsuarioResult(
+                u.Id, u.FirstName, u.LastName, u.Email, u.Telefono))
+            .FirstOrDefaultAsync(cancellationToken);
+}
+
+public sealed class CreateUsuarioCommandHandler
+    : IRequestHandler<CreateUsuarioCommand, UsuarioResult>
+{
+    private readonly IAppDbContext _context;
+    private readonly IPasswordHasher _passwordHasher;
+
+    public CreateUsuarioCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher)
+    {
+        _context = context;
+        _passwordHasher = passwordHasher;
+    }
+
+    public async Task<UsuarioResult> Handle(
+        CreateUsuarioCommand request,
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = Guid.NewGuid();
+        var codigo = request.CodigoRegistro?.Trim().ToUpperInvariant() ?? string.Empty;
+        var ahora = DateTime.UtcNow;
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+
+        // El UPDATE condicional reclama el código de forma atómica: si dos registros
+        // llegan a la vez con el mismo código, solo uno obtiene filas afectadas.
+        var reclamado = await _context.CodigosRegistro
+            .Where(c => c.Codigo == codigo && c.UsadoPorUsuarioId == null && c.FechaExpiracion > ahora)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(c => c.UsadoPorUsuarioId, usuarioId)
+                .SetProperty(c => c.FechaUso, ahora), cancellationToken);
+
+        if (reclamado == 0)
+        {
+            throw new CodigoRegistroInvalidoException();
+        }
+
+        var usuario = new User
+        {
+            Id = usuarioId,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Contrasena = _passwordHasher.Hash(request.Contrasena),
+            Telefono = request.Telefono,
+            EstadoMembresia = "Inactivo",
+            TipoMembresia = "Basica",
+            FechaVencimientoMembresia = null,
+            CodigoAccesoQR = Guid.NewGuid().ToString("N")
+        };
+
+        _context.Users.Add(usuario);
+        await _context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
+        return new UsuarioResult(
+            usuario.Id, usuario.FirstName, usuario.LastName, usuario.Email, usuario.Telefono);
+    }
+}
+
+public sealed class UpdateUsuarioCommandHandler
+    : IRequestHandler<UpdateUsuarioCommand, bool>
+{
+    private readonly IAppDbContext _context;
+    private readonly IPasswordHasher _passwordHasher;
+
+    public UpdateUsuarioCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher)
+    {
+        _context = context;
+        _passwordHasher = passwordHasher;
+    }
+
+    public async Task<bool> Handle(
+        UpdateUsuarioCommand request,
+        CancellationToken cancellationToken)
+    {
+        var usuario = await _context.Users.FindAsync([request.Id], cancellationToken);
+        if (usuario is null)
+        {
+            return false;
+        }
+
+        usuario.FirstName = request.FirstName;
+        usuario.LastName = request.LastName;
+        usuario.Email = request.Email;
+        usuario.Contrasena = _passwordHasher.Hash(request.Contrasena);
+        usuario.Telefono = request.Telefono;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+}

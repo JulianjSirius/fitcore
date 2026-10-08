@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Services\Gateway\FitCore.Gateway\FitCore.Gateway.csproj" />
+    <!-- Solo para leer los [Route] de los controladores y comprobar que el gateway los cubre. -->
+    <ProjectReference Include="..\..\Services\Identity\FitCore.Identity.API\FitCore.Identity.API.csproj" Aliases="IdentityApi" />
+    <ProjectReference Include="..\..\Services\Workouts\FitCore.Workouts.API\FitCore.Workouts.API.csproj" Aliases="WorkoutsApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Services\Gateway\FitCore.Gateway\appsettings.json" Link="gateway.appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
