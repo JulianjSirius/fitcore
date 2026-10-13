@@ -3,6 +3,7 @@ using FitCore.Workouts.Application;
 using FitCore.Workouts.Application.Abstractions;
 using FitCore.Workouts.Infrastructure.ExternalServices;
 using FitCore.Workouts.Infrastructure.Persistence;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        // 4200: fitcore-web (Angular) · 4300: Fitcore_app (Flutter web)
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4300")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -48,6 +50,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddMediatR(configuration =>
     configuration.RegisterServicesFromAssembly(typeof(FitCore.Workouts.Application.Features.Rutinas.Queries.GetRutinasQuery).Assembly));
+TypeAdapterConfig.GlobalSettings.Scan(typeof(FitCore.Workouts.Application.Features.Rutinas.Queries.GetRutinasQuery).Assembly);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<WorkoutsDbContext>(options => options.UseNpgsql(connectionString));

@@ -1,4 +1,4 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.CodigosRegistro.DTOs;
 using FitCore.Identity.API.Security;
 using FitCore.Identity.Application.Features.CodigosRegistro.Commands;
 using FitCore.Identity.Application.Features.CodigosRegistro.Queries;

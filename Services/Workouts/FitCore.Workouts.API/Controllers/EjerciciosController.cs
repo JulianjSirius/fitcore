@@ -1,6 +1,7 @@
-using FitCore.Workouts.API.DTOs;
+using FitCore.Workouts.Application.Features.Ejercicios.DTOs;
 using FitCore.Workouts.Application.Features.Ejercicios.Commands;
 using FitCore.Workouts.Application.Features.Ejercicios.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,14 +21,14 @@ public sealed class EjerciciosController : ControllerBase
     public async Task<ActionResult<IEnumerable<EjercicioResponse>>> Get(CancellationToken cancellationToken)
     {
         var results = await mediator.Send(new GetEjerciciosQuery(), cancellationToken);
-        return Ok(results.Select(EjercicioResponse.FromResult));
+        return Ok(results.Adapt<List<EjercicioResponse>>());
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<EjercicioResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetEjercicioByIdQuery(id), cancellationToken);
-        return result is null ? NotFound() : Ok(EjercicioResponse.FromResult(result));
+        return result is null ? NotFound() : Ok(result.Adapt<EjercicioResponse>());
     }
 
     [Authorize(Roles = "Entrenador,Administrador")]
@@ -36,7 +37,7 @@ public sealed class EjerciciosController : ControllerBase
     {
         var result = await mediator.Send(new CreateEjercicioCommand(
             request.Nombre, request.GrupoMuscular, request.DescripcionOrientativa), cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, EjercicioResponse.FromResult(result));
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result.Adapt<EjercicioResponse>());
     }
 
     [Authorize(Roles = "Entrenador,Administrador")]
@@ -45,7 +46,7 @@ public sealed class EjerciciosController : ControllerBase
     {
         var result = await mediator.Send(new UpdateEjercicioCommand(
             id, request.Nombre, request.GrupoMuscular, request.DescripcionOrientativa), cancellationToken);
-        return result is null ? NotFound() : Ok(EjercicioResponse.FromResult(result));
+        return result is null ? NotFound() : Ok(result.Adapt<EjercicioResponse>());
     }
 
     [Authorize(Roles = "Entrenador,Administrador")]

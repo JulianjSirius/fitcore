@@ -1,9 +1,10 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Usuarios.DTOs;
 using FitCore.Identity.API.Security;
 using FitCore.Identity.Application.Features.Logros.Queries;
 using FitCore.Identity.Application.Features.Usuarios;
 using FitCore.Identity.Application.Features.Usuarios.Commands;
 using FitCore.Identity.Application.Features.Usuarios.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ public class UsuarioController : ControllerBase
     public async Task<ActionResult<IEnumerable<UsuarioResponse>>> Get()
     {
         var usuarios = await _mediator.Send(new GetUsuariosQuery());
-        return Ok(usuarios.Select(ToResponse));
+        return Ok(usuarios.Adapt<List<UsuarioResponse>>());
     }
 
     [HttpGet("{id:guid}")]
@@ -42,7 +43,7 @@ public class UsuarioController : ControllerBase
 
         return usuario is null
             ? NotFound(new { message = "Usuario no encontrado." })
-            : Ok(ToResponse(usuario));
+            : Ok(usuario.Adapt<UsuarioResponse>());
     }
 
     // Token de 1 minuto con el id del usuario para pintar el QR de entrada.
@@ -92,7 +93,7 @@ public class UsuarioController : ControllerBase
                 request.telefono,
                 request.CodigoRegistro));
 
-            return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, ToResponse(usuario));
+            return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario.Adapt<UsuarioResponse>());
         }
         catch (CodigoRegistroInvalidoException exception)
         {
@@ -116,14 +117,4 @@ public class UsuarioController : ControllerBase
             ? NoContent()
             : NotFound(new { message = "Usuario no encontrado." });
     }
-
-    private static UsuarioResponse ToResponse(UsuarioResult usuario)
-        => new()
-        {
-            Id = usuario.Id,
-            FirstName = usuario.FirstName,
-            LastName = usuario.LastName,
-            Email = usuario.Email,
-            telefono = usuario.Telefono
-        };
 }

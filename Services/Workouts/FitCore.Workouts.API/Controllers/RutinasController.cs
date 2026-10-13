@@ -1,7 +1,8 @@
-using FitCore.Workouts.API.DTOs;
+using FitCore.Workouts.Application.Features.Rutinas.DTOs;
 using FitCore.Workouts.API.Security;
 using FitCore.Workouts.Application.Features.Rutinas.Commands;
 using FitCore.Workouts.Application.Features.Rutinas.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +25,14 @@ public sealed class RutinasController : ControllerBase
         var role = User.GetRole();
         var requestedUserId = role == "Usuario" ? userId : null;
         var results = await mediator.Send(new GetRutinasQuery(requestedUserId), cancellationToken);
-        return Ok(results.Select(RutinaResponse.FromResult));
+        return Ok(results.Adapt<List<RutinaResponse>>());
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RutinaResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetRutinaByIdQuery(id), cancellationToken);
-        return result is null ? NotFound() : Ok(RutinaResponse.FromResult(result));
+        return result is null ? NotFound() : Ok(result.Adapt<RutinaResponse>());
     }
 
     [HttpPost]
@@ -50,10 +51,10 @@ public sealed class RutinasController : ControllerBase
                 request.NivelDificultad,
                 request.UsuarioId,
                 request.PermitirEdicionEntrenador,
-                request.ToInputs(),
+                request.RutinaEjercicios.Adapt<List<RutinaEjercicioInput>>(),
                 creatorId,
                 User.GetRole()!), cancellationToken);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, RutinaResponse.FromResult(result));
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result.Adapt<RutinaResponse>());
         }
         catch (InvalidOperationException exception)
         {
@@ -82,10 +83,10 @@ public sealed class RutinasController : ControllerBase
                 request.Descripcion,
                 request.NivelDificultad,
                 request.PermitirEdicionEntrenador,
-                request.ToInputs(),
+                request.RutinaEjercicios.Adapt<List<RutinaEjercicioInput>>(),
                 actorId,
                 User.GetRole()!), cancellationToken);
-            return result is null ? Forbid() : Ok(RutinaResponse.FromResult(result));
+            return result is null ? Forbid() : Ok(result.Adapt<RutinaResponse>());
         }
         catch (InvalidOperationException exception)
         {

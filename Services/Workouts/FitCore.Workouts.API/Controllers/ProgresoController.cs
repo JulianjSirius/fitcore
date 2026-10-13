@@ -1,6 +1,7 @@
-using FitCore.Workouts.API.DTOs;
+using FitCore.Workouts.Application.Features.Progreso.DTOs;
 using FitCore.Workouts.API.Security;
 using FitCore.Workouts.Application.Features.Progreso.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,6 @@ public sealed class ProgresoController : ControllerBase
         }
 
         var result = await mediator.Send(new GetMiProgresoQuery(usuarioId), cancellationToken);
-        return Ok(ProgresoResumenResponse.FromResult(result));
+        return Ok(result.Adapt<ProgresoResumenResponse>());
     }
 }

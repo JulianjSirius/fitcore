@@ -1,4 +1,4 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Autenticacion.DTOs;
 using FitCore.Identity.Application.Features.Autenticacion.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

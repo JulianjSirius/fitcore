@@ -1,6 +1,7 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Administradores.DTOs;
 using FitCore.Identity.Application.Features.Administradores.Commands;
 using FitCore.Identity.Application.Features.Administradores.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ public class AdministradorController : ControllerBase
     public async Task<ActionResult<IEnumerable<AdministradorResponse>>> Get()
     {
         var administradores = await _mediator.Send(new GetAdministradoresQuery());
-        return Ok(administradores.Select(ToResponse));
+        return Ok(administradores.Adapt<List<AdministradorResponse>>());
     }
 
     [HttpGet("{id:guid}")]
@@ -33,7 +34,7 @@ public class AdministradorController : ControllerBase
 
         return administrador is null
             ? NotFound(new { message = "Administrador no encontrado." })
-            : Ok(ToResponse(administrador));
+            : Ok(administrador.Adapt<AdministradorResponse>());
     }
 
     [Authorize(Policy = "SoloAdministrador")]
@@ -51,7 +52,7 @@ public class AdministradorController : ControllerBase
         return CreatedAtAction(
             nameof(GetById),
             new { id = administrador.Id },
-            ToResponse(administrador));
+            administrador.Adapt<AdministradorResponse>());
     }
 
     [Authorize(Policy = "SoloAdministrador")]
@@ -82,15 +83,4 @@ public class AdministradorController : ControllerBase
             ? NoContent()
             : NotFound(new { message = "Administrador no encontrado." });
     }
-
-    private static AdministradorResponse ToResponse(AdministradorResult administrador)
-        => new()
-        {
-            Id = administrador.Id,
-            Nombre = administrador.Nombre,
-            LastName = administrador.LastName,
-            Email = administrador.Email,
-            Telefono = administrador.Telefono,
-            NivelAcceso = administrador.NivelAcceso
-        };
 }

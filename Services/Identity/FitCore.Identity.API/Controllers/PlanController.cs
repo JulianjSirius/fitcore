@@ -1,4 +1,4 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Planes.DTOs;
 using FitCore.Identity.Application.Features.Membresias;
 using FitCore.Identity.Application.Features.Planes.Commands;
 using FitCore.Identity.Application.Features.Planes.Queries;

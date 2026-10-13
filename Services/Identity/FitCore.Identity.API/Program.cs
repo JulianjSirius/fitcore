@@ -6,6 +6,7 @@ using FitCore.Identity.Application.Abstractions;
 using FitCore.Identity.Application.Features.Membresias;
 using FitCore.Identity.Infrastructure.Persistence;
 using FitCore.Identity.Infrastructure.Security;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins("http://localhost:4200")
+        // 4200: fitcore-web (Angular) · 4300: Fitcore_app (Flutter web)
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4300")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -27,6 +29,7 @@ builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("base-de-dato
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(IAppDbContext).Assembly));
+TypeAdapterConfig.GlobalSettings.Scan(typeof(IAppDbContext).Assembly);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

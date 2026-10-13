@@ -1,7 +1,8 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Entrenadores.DTOs;
 using FitCore.Identity.API.Security;
 using FitCore.Identity.Application.Features.Entrenadores.Commands;
 using FitCore.Identity.Application.Features.Entrenadores.Queries;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ public class EntrenadorController : ControllerBase
     public async Task<ActionResult<IEnumerable<EntrenadorResponse>>> Get()
     {
         var entrenadores = await _mediator.Send(new GetEntrenadoresQuery());
-        return Ok(entrenadores.Select(ToResponse));
+        return Ok(entrenadores.Adapt<List<EntrenadorResponse>>());
     }
 
     [HttpGet("{id:guid}")]
@@ -40,7 +41,7 @@ public class EntrenadorController : ControllerBase
 
         return entrenador is null
             ? NotFound(new { message = "Entrenador no encontrado." })
-            : Ok(ToResponse(entrenador));
+            : Ok(entrenador.Adapt<EntrenadorResponse>());
     }
 
     [Authorize(Roles = "Administrador")]
@@ -55,7 +56,7 @@ public class EntrenadorController : ControllerBase
             request.Contrasena,
             request.Telefono));
 
-        return CreatedAtAction(nameof(GetById), new { id = entrenador.Id }, ToResponse(entrenador));
+        return CreatedAtAction(nameof(GetById), new { id = entrenador.Id }, entrenador.Adapt<EntrenadorResponse>());
     }
 
     [Authorize(Policy = "SoloAdministrador")]
@@ -75,15 +76,4 @@ public class EntrenadorController : ControllerBase
             ? NoContent()
             : NotFound(new { message = "Entrenador no encontrado." });
     }
-
-    private static EntrenadorResponse ToResponse(EntrenadorResult entrenador)
-        => new()
-        {
-            Id = entrenador.Id,
-            Nombre = entrenador.Nombre,
-            Especialidad = entrenador.Especialidad,
-            Horario = entrenador.Horario,
-            Email = entrenador.Email,
-            Telefono = entrenador.Telefono
-        };
 }

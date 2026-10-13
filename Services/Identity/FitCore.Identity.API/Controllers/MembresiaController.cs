@@ -1,4 +1,4 @@
-using FitCore.Identity.API.DTOs;
+using FitCore.Identity.Application.Features.Membresias.DTOs;
 using FitCore.Identity.API.Security;
 using FitCore.Identity.Application.Features.Membresias;
 using FitCore.Identity.Application.Features.Membresias.Commands;
