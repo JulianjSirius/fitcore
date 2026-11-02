@@ -4,26 +4,20 @@ Plataforma de gestión para gimnasios desarrollada con **.NET 10**, **Angular 22
 
 Está construida como **microservicios** (Identity y Workouts) detrás de un **API Gateway**, cada uno con su propia base de datos PostgreSQL y aplicando **Clean Architecture** con **CQRS** (MediatR).
 
-## Autores
-
-- JulianjSirius
-
-> Agrega aquí a los demás integrantes del equipo.
 
 ## Inicio rápido
 
 ```bash
-# 1. Infraestructura (PostgreSQL x2 + RabbitMQ)
-cp .env.example .env        # o crea .env con POSTGRES_PASSWORD y RABBITMQ_PASSWORD
+cp .env.example .env        # crea .env con POSTGRES_PASSWORD
 docker compose up -d
 
-# 2. Secretos de las APIs (ver sección "Configuración")
-# 3. Servicios (una terminal cada uno)
+
+# 1. Servicios (una terminal cada uno)
 dotnet run --project Services/Identity/FitCore.Identity.API
 dotnet run --project Services/Workouts/FitCore.Workouts.API
 dotnet run --project Services/Gateway/FitCore.Gateway
 
-# 4. Cliente web
+# 2. Cliente web
 cd fitcore-web && npm install && npm start
 ```
 
@@ -98,7 +92,7 @@ FitCore
 ├── fitcore-web/                             ← Cliente Angular
 ├── Fitcore_app/                             ← Cliente Flutter (web, listo para Android/iOS)
 ├── tests/                                   ← xUnit: Identity, Workouts, Gateway
-└── docker-compose.yml                       ← PostgreSQL x2 + RabbitMQ
+└── docker-compose.yml                       ← PostgreSQL x2
 ```
 
 ## Detalle de cada servicio
@@ -156,7 +150,6 @@ Angular y Flutter tienen las mismas pantallas: login, registro, dashboard, usuar
 | Flutter + go_router | — | Cliente multiplataforma |
 | qr_flutter / mobile_scanner / angularx-qrcode | — | Generación y lectura de QR |
 | Docker Compose | — | Infraestructura local |
-| RabbitMQ | 3 | Mensajería (preparado, sin uso) |
 | Wger API | — | Catálogo externo de ejercicios |
 | Wompi | — | Pagos en línea (modelo preparado, sin activar) |
 | xUnit + WebApplicationFactory | — | Pruebas de backend |
@@ -223,12 +216,10 @@ El **Dueño** es un administrador con el claim `NivelAcceso = Dueño`, que se em
 - Flutter SDK (opcional, solo para `Fitcore_app`)
 
 ### Paso 1 — Infraestructura
-Crea un archivo `.env` en la raíz (ya está en `.gitignore`):
+Crea un archivo `.env` en la raíz
 
 ```env
 POSTGRES_PASSWORD=tu_password
-RABBITMQ_PASSWORD=tu_password
-# RABBITMQ_USER=guest   (opcional)
 ```
 
 ```bash
@@ -239,10 +230,9 @@ docker compose up -d
 |---|---|---|
 | PostgreSQL (Identity) | 5432 | `fitcore_identity` |
 | PostgreSQL (Workouts) | 5433 | `fitcore_workouts` |
-| RabbitMQ | 5672 / 15672 (panel) | — |
 
 ### Paso 2 — Configuración de secretos
-Las APIs **no arrancan** sin estas claves. Usa `dotnet user-secrets` (nunca las pongas en `appsettings.json`):
+Las APIs **no arrancan** sin estas claves. Usa `dotnet user-secrets
 
 ```bash
 # Identity
@@ -346,23 +336,3 @@ La lista completa y los cuerpos de cada petición están en Swagger.
 | Pagos en línea (Wompi) | 🔜 Modelo preparado |
 | Mensajería con RabbitMQ (recordatorios de vencimiento) | 🔜 Infraestructura lista |
 | CI/CD, Dockerfiles, observabilidad | 🔜 Pendiente |
-
-## Próximos pasos
-
-**Seguridad y consistencia (prioridad)**
-- Restringir `GET /api/Rutinas/{id}` al dueño de la rutina y al personal.
-- Validar `EstaActivo` en el login de entrenadores y administradores.
-- Índice único y normalización del correo en las tres tablas de cuentas.
-- Límite de intentos en el login y en la validación del QR.
-- Validación de entradas (formato de correo, política de contraseña).
-- Eliminar la copia obsoleta del backend en `fitcore-web/Services/`.
-
-**Producto**
-- Pagos en línea con Wompi y renovación automática.
-- Recordatorios de vencimiento por correo, WhatsApp o push (RabbitMQ).
-- Panel del dueño: ingresos, socios activos y vencidos, retención, ocupación.
-- Recuperación de contraseña, congelar membresía y cambio de plan.
-- Reserva de clases con cupos, aforo en tiempo real y multi-sucursal.
-- Pruebas end-to-end y colección Postman para todos los endpoints.
-
-El análisis completo de mejoras e ideas está en [RESUMEN_PROYECTO.md](RESUMEN_PROYECTO.md).
